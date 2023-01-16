@@ -11,17 +11,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func IsGoodCredentials(username string, password string) bool {
-	//Open Database
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+var db *sql.DB = nil
 
+func IsGoodCredentials(username string, password string) bool {
 	//Get Password from Database
 	var passwordFromDB string
-	err = db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&passwordFromDB)
+	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&passwordFromDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,13 +31,6 @@ func IsGoodCredentials(username string, password string) bool {
 }
 
 func RegisterUser(username string, email string, age string, gender string, firstname string, lastname string, password string) {
-	//Open Database
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	//Hash Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -62,17 +50,10 @@ func RegisterUser(username string, email string, age string, gender string, firs
 }
 
 func DidUserExist(username string) bool {
-	//Open Database
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	//Get Password from Database
 	//Check if email or username already exists
 	var usernameFromDB string
-	err = db.QueryRow("SELECT username FROM users WHERE username = ?", username).Scan(&usernameFromDB)
+	err := db.QueryRow("SELECT username FROM users WHERE username = ?", username).Scan(&usernameFromDB)
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -86,13 +67,6 @@ func DidUserExist(username string) bool {
 
 }
 func CreatePost(Creator string, Title string, Content string, Categories []string, Comments []string) {
-	//Open Database
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	//Insert Post into Database
 	stmt, err := db.Prepare("INSERT INTO posts(creator, title, content, categories, comments) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
@@ -104,13 +78,8 @@ func CreatePost(Creator string, Title string, Content string, Categories []strin
 		log.Fatal(err)
 	}
 }
+
 func CreatePrivateMessage(From string, To string, Content string, Date string) {
-	//Open Database
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 
 	//Insert Private Message into Database
 	stmt, err := db.Prepare("INSERT INTO private_messages(from, to, content, date) VALUES(?, ?, ?, ?)")
