@@ -56,12 +56,8 @@ type PrivateMessage struct {
 func ListenforMessages(ws *websocket.Conn) {
 	go MessageHandler()
 	for {
-		fmt.Println("t")
 		var msg Message
-		/* _, b, _ := ws.ReadMessage()
-		fmt.Println(string(b)) */
 		err := ws.ReadJSON(&msg)
-		//fmt.Println(msg, err)
 		if err != nil {
 			log.Println(err)
 			delete(clients, ws)
