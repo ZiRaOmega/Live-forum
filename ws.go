@@ -52,9 +52,13 @@ type PrivateMessage struct {
 	Content string `json:"content"`
 	Date    string `json:"date"`
 }
+type ServerAnswer struct {
+	Answer string `json:"answer"`
+	Type   string `json:"type"`
+}
 
 func ListenforMessages(ws *websocket.Conn) {
-	go MessageHandler()
+	go MessageHandler(ws)
 	for {
 		var msg Message
 		err := ws.ReadJSON(&msg)
@@ -79,26 +83,26 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func MessageHandler() {
+func MessageHandler(ws *websocket.Conn) {
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
 
 		switch Message.Message_Type {
 		case "login":
-			WsLogin(Message)
+			WsLogin(ws, Message)
 		case "register":
-			WsRegister(Message)
+			WsRegister(ws, Message)
 		case "post":
-			WsPost(Message)
+			WsPost(ws, Message)
 		case "private":
-			WsPrivate(Message)
+			WsPrivate(ws, Message)
 		case "hello":
 			fmt.Println(Message)
 		}
 	}
 }
-func WsLogin(Message Message) { //Working
+func WsLogin(ws *websocket.Conn, Message Message) { //Working
 	Content := LoginMessage{}
 	//convert interface to LoginMessage
 	json.Unmarshal(Message.ConvertInterface(), &Content)
@@ -106,10 +110,15 @@ func WsLogin(Message Message) { //Working
 	Username := Content.Username
 	Password := Content.Password
 	//fmt.Println("login", Username)
+	Answer := ServerAnswer{Type: "login"}
 	if IsGoodCredentials(Username, Password) {
 		//login
+		Answer.Answer = "success"
+		ws.WriteJSON(Answer)
 	} else {
 		//error
+		Answer.Answer = "error"
+		ws.WriteJSON(Answer)
 	}
 }
 func (m *Message) ConvertInterface() []byte {
@@ -117,7 +126,7 @@ func (m *Message) ConvertInterface() []byte {
 	Mes := m.Message.(string)
 	return []byte(Mes)
 }
-func WsRegister(Message Message) {
+func WsRegister(ws *websocket.Conn, Message Message) {
 	Content := RegisterMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//register user
@@ -129,16 +138,21 @@ func WsRegister(Message Message) {
 	LastName := Content.LastName
 	Password := Content.Password
 	fmt.Println(Username, Email, Age, Gender, FirstName, LastName, Password)
+	Answer := ServerAnswer{Type: "register"}
 	if DidUserExist(Username) || DidUserExist(Email) {
 		//error
+		Answer.Answer = "error"
+		ws.WriteJSON(Answer)
 	} else {
 		//register
 		RegisterUser(Username, Email, Age, Gender, FirstName, LastName, Password)
+		Answer.Answer = "success"
+		ws.WriteJSON(Answer)
 	}
 
 }
 
-func WsPost(Message Message) {
+func WsPost(ws *websocket.Conn, Message Message) {
 	Content := PostMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//post
@@ -148,9 +162,11 @@ func WsPost(Message Message) {
 	Categories := Content.Categories
 	Comments := Content.Comments
 	CreatePost(Creator, Title, Contentt, Categories, Comments)
+	Answer := ServerAnswer{Answer: "success", Type: "post"}
+	ws.WriteJSON(Answer)
 }
 
-func WsPrivate(Message Message) {
+func WsPrivate(ws *websocket.Conn, Message Message) {
 	Content := PrivateMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//private message
@@ -159,4 +175,6 @@ func WsPrivate(Message Message) {
 	Contentt := Content.Content
 	Date := Content.Date
 	CreatePrivateMessage(From, To, Contentt, Date)
+	Answer := ServerAnswer{Answer: "success", Type: "private"}
+	ws.WriteJSON(Answer)
 }
