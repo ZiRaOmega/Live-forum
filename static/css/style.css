@@ -61,6 +61,32 @@ a:hover {
     margin: 0 10px;
 }
 
+footer {
+    position: fixed;
+    bottom: 0%;
+    left: 0%;
+    width: 100%;
+    height: 10%;
+    background-color: black;
+    color: white;
+}
+
+.left {
+    position: fixed;
+    left: 1%;
+    width: 32%;
+}
+.mid {
+    position: fixed;
+    left: 33%;
+    width: 32%;
+}
+.right {
+    position: fixed;
+    left: 66%;
+    width: 32%;
+}
+
 #logo {
     width: 50px;
     height: 50px;
