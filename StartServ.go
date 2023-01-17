@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"fmt"
+)
 
 func StartServerHandler() {
 	//Handlers
@@ -12,5 +15,6 @@ func StartServerHandler() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	//Start Server
+	fmt.Println("http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
 }
