@@ -74,6 +74,10 @@ func createUserTable(db *sql.DB) {
 		"name" TEXT,
 		"mail" TEXT,
 		"password" TEXT,
+		"age" TEXT,
+		"gender" TEXT,
+		"firstname" TEXT,
+		"lastname" TEXT,
 		"profile_picture" TEXT,
 		"rank" TEXT
 
