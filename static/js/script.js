@@ -3,9 +3,9 @@ const SwitchPage=(page)=>{
     FetchPage(page);
 }
 const FetchPage=(page)=>{
-    fetch(`pages/${page}`)
+    fetch(`/${page}`)
     .then(response => response.text())
     .then(data => {
-        document.innerHTML = data;
+        document.body.innerHTML = data;
     });
 }
