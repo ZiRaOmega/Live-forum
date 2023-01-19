@@ -111,11 +111,11 @@ footer {
 
 .popup label {
     position: absolute;
-    left: 90px;
+    left: 10%;
 }
 
 input {
-    width: 200px;
+    width: 80%;
     height: 30px;
     border: none;
     border-top-right-radius: 4px;
@@ -124,7 +124,7 @@ input {
 }
 
 select {
-    width: 200px;
+    width: 80%;
     height: 30px;
     border: none;
     border-top-right-radius: 4px;
