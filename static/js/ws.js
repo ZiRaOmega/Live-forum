@@ -51,7 +51,7 @@ class RegisterMessage {
     }
 }
 
-class PostMessage extends Message {
+class PostMessage {
     message = {
         creator: "",
         title: "",
