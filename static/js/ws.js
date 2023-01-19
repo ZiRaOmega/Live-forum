@@ -67,7 +67,6 @@ class PostMessage {
         this.message.title = title;
         this.message.content = content;
         this.message.categories = categories;
-        super(creator, this.Stringify(), "post");
     }
 }
 class PrivateMessage{
