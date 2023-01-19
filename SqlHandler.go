@@ -16,7 +16,7 @@ var db *sql.DB = nil
 func IsGoodCredentials(username string, password string) bool {
 	//Get Password from Database
 	var passwordFromDB string
-	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&passwordFromDB)
+	err := db.QueryRow("SELECT password FROM user WHERE username = ?", username).Scan(&passwordFromDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func RegisterUser(username string, email string, age string, gender string, firs
 	}
 
 	//Insert User into Database
-	stmt, err := db.Prepare("INSERT INTO users(username, email, age, gender, firstname, lastname, password) VALUES(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO user(username, email, age, gender, firstname, lastname, password) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,12 +53,12 @@ func DidUserExist(username string) bool {
 	//Get Password from Database
 	//Check if email or username already exists
 	var usernameFromDB string
-	err := db.QueryRow("SELECT username FROM users WHERE username = ?", username).Scan(&usernameFromDB)
+	err := db.QueryRow("SELECT username FROM user WHERE username = ?", username).Scan(&usernameFromDB)
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
-	err = db.QueryRow("SELECT email FROM users WHERE email = ?", username).Scan(&usernameFromDB)
+	err = db.QueryRow("SELECT email FROM user WHERE email = ?", username).Scan(&usernameFromDB)
 	if err != nil {
 		log.Fatal(err)
 		return false
