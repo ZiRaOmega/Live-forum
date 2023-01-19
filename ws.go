@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -21,15 +22,20 @@ var (
 	broadcast = make(chan Message)
 )
 
+// Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 type Message struct {
 	Username     string      `json:"username"`
 	Message      interface{} `json:"message"`
 	Message_Type string      `json:"type"`
 }
+
+// Used for sending login (for user)
 type LoginMessage struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+// Used for sending register (for user)
 type RegisterMessage struct {
 	Username  string `json:"username"`
 	Email     string `json:"email"`
@@ -39,6 +45,8 @@ type RegisterMessage struct {
 	LastName  string `json:"lastname"`
 	Password  string `json:"password"`
 }
+
+// Used for sending posts
 type PostMessage struct {
 	Creator    string   `json:"creator"`
 	Title      string   `json:"title"`
@@ -46,17 +54,22 @@ type PostMessage struct {
 	Categories []string `json:"categories"`
 	Comments   []string `json:"comments"`
 }
+
+// Used for sending private messages
 type PrivateMessage struct {
 	From    string `json:"from"`
 	To      string `json:"to"`
 	Content string `json:"content"`
 	Date    string `json:"date"`
 }
+
+// Used for sending answer to client
 type ServerAnswer struct {
 	Answer string `json:"answer"`
 	Type   string `json:"type"`
 }
 
+// handle messages from websocket
 func ListenforMessages(ws *websocket.Conn) {
 	go MessageHandler(ws)
 	for {
@@ -71,6 +84,7 @@ func ListenforMessages(ws *websocket.Conn) {
 	}
 }
 
+// handle websocket connection
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -83,11 +97,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// handle messages from websocket
 func MessageHandler(ws *websocket.Conn) {
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
-
+		//switch message type (login, register, post, private) and call function
 		switch Message.Message_Type {
 		case "login":
 			WsLogin(ws, Message)
@@ -102,6 +117,8 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+
+// login user using websocket
 func WsLogin(ws *websocket.Conn, Message Message) { //Working
 	Content := LoginMessage{}
 	//convert interface to LoginMessage
@@ -109,7 +126,6 @@ func WsLogin(ws *websocket.Conn, Message Message) { //Working
 	//login user
 	Username := Content.Username
 	Password := Content.Password
-	//fmt.Println("login", Username)
 	Answer := ServerAnswer{Type: "login"}
 	if IsGoodCredentials(Username, Password) {
 		//login
@@ -121,11 +137,15 @@ func WsLogin(ws *websocket.Conn, Message Message) { //Working
 		ws.WriteJSON(Answer)
 	}
 }
+
+// convert interface to []byte for json
 func (m *Message) ConvertInterface() []byte {
 	//convert Message to []byte
 	Mes := m.Message.(string)
 	return []byte(Mes)
 }
+
+// register user using websocket
 func WsRegister(ws *websocket.Conn, Message Message) {
 	Content := RegisterMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
@@ -152,6 +172,7 @@ func WsRegister(ws *websocket.Conn, Message Message) {
 
 }
 
+// post using websocket
 func WsPost(ws *websocket.Conn, Message Message) {
 	Content := PostMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
@@ -166,6 +187,7 @@ func WsPost(ws *websocket.Conn, Message Message) {
 	ws.WriteJSON(Answer)
 }
 
+// private message using websocket
 func WsPrivate(ws *websocket.Conn, Message Message) {
 	Content := PrivateMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
