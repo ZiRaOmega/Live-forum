@@ -336,16 +336,16 @@ func insertComment(db *sql.DB, comment string, usernames string, postID int) {
 }
 
 // We are passing db reference connection from main to our method with other parameters
-func insertUser(db *sql.DB, name string, mail string, password string, profile_picture string, rank string) {
+func insertUser(db *sql.DB, name string, mail string, age string, gender string, firstname string, lastname string, password string, profile_picture string, rank string) {
 	EncodedPassword, _ := HashPassword(password)
 	go Log("[\033[33m>\033[0m] Inserting user record")
-	insertUserSQL := `INSERT INTO user(name, mail, password, profile_picture,rank) VALUES (?, ?, ?, ?, ?)`
+	insertUserSQL := `INSERT INTO users (name, mail, age, gender, firstname, lastname, password, profile_picture, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	statement, err := db.Prepare(insertUserSQL) // Prepare statement.
 	// This is good to avoid SQL injections
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	_, err = statement.Exec(name, mail, EncodedPassword, profile_picture, rank)
+	_, err = statement.Exec(name, mail, age, gender, firstname, lastname, EncodedPassword, profile_picture, rank)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
