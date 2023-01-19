@@ -1,14 +1,16 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 func StartServerHandler() {
 	//Handlers
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/ws", wsHandler)
+	http.HandleFunc("/login", loginPage)
+	http.HandleFunc("/register", registerPage)
 
 	//Static Files
 	fs := http.FileServer(http.Dir("./static/"))
