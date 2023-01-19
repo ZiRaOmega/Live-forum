@@ -149,10 +149,29 @@ const TestRegister=()=>{
     websocket.send(message.Stringify())
 }
 
+function LoginClick() {
+    var username = document.getElementById('username').value
+    var password = document.getElementById('password').value
+    CreateLoginWS(username,password)
+    return false;
+}
+
 const CreateLoginWS = (username,password)=>{
     var logmessage = new LoginMessage(username,password)
     var message=new Message(username,logmessage.Stringify(),"login")
     websocket.send(message.Stringify())
+}
+
+function RegisterClick() {
+    var username = document.getElementById('username').value
+    var email = document.getElementById('email').value
+    var age = document.getElementById('age').value
+    var gender = document.getElementById('gender').value
+    var firstname = document.getElementById('firstname').value
+    var lastname = document.getElementById('lastname').value
+    var password = document.getElementById('password').value
+    CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
+    return false;
 }
 
 const CreateRegisterWS = (username,email,age,gender,firstname,lastname,password)=>{
