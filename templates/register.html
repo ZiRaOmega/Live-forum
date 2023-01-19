@@ -1,0 +1,41 @@
+{{define "home"}}
+{{template "header"}}
+<div class="popup">
+    <form>
+        <label for="username">Username</label>
+        <br>
+        <input type="text" name="username" placeholder="Username">
+        <br>
+        <label for="firstname">FirstName</label>
+        <br>
+        <input type="text" name="firstname" placeholder="Bob">
+        <br>
+        <label for="lastname">LastName</label>
+        <br>
+        <input type="text" name="lastname" placeholder="Smith">
+        <br>
+        <label for="email">EMail</label>
+        <br>
+        <input type="email" name="email" placeholder="example@test.com">
+        <br>
+        <label for="age">Age</label>
+        <br>
+        <input type="number" name="age" placeholder="10" min="10">
+        <br>
+        <label for="gender">Gender</label>
+        <br>
+        <select name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="undefined">Undefined</option>
+        </select>
+        <br>
+        <label for="password">Password</label>
+        <br>
+        <input type="password" name="password" placeholder="******">
+        <br>
+        <input type="submit" class="pointer" value="Register">
+    </form>
+</div>
+{{template "footer"}}
+{{end}}
