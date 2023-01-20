@@ -161,17 +161,17 @@ func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 	LastName := Content.LastName
 	Password := Content.Password
 	fmt.Println(Username, Email, Age, Gender, FirstName, LastName, Password)
-	//Answer := ServerAnswer{Type: "register"}
+	Answer := ServerAnswer{Type: "register"}
 	if DidUserExist(db, Username) || DidUserExist(db, Email) {
 		//error
-		//Answer.Answer = "error"
-		//ws.WriteJSON(Answer)
+		Answer.Answer = "error"
+		ws.WriteJSON(Answer)
 		fmt.Println("error")
 	} else {
 		//register
 		RegisterUser(db, Username, Email, Age, Gender, FirstName, LastName, Password)
-		//Answer.Answer = "success"
-		//ws.WriteJSON(Answer)
+		Answer.Answer = "success"
+		ws.WriteJSON(Answer)
 		fmt.Println("success")
 	}
 
