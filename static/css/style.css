@@ -10,6 +10,7 @@ body{
 }
 
 a {
+    cursor: pointer;
     text-decoration: none;
     font-weight: bold;
     letter-spacing: 1px;
@@ -133,5 +134,66 @@ select {
 }
 
 .pointer {
+    cursor: pointer;
+}
+
+.conv {
+    position: absolute;
+    width: 70%;
+    height:70%;
+    left: 1%;
+    top: auto;
+    border-radius: 8px;
+    background-color: #fafafadf;
+    padding-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.recentconv {
+    position: absolute;
+    width: 20%;
+    height:70%;
+    left: 75%;
+    top: auto;
+    border-radius: 8px;
+    background-color: #fafafadf;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#recent {
+    color: white;
+    padding-top: 5%;
+    font-size: 28px;
+    font-weight: bold;
+    top: 0%;
+    left: 0%;
+    background-color: rgba(76, 175, 255, 0.823);
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    height: 10%;
+    border-bottom: 2px solid rgb(255, 255, 255);
+}
+
+#sender {
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+#sender_button {
+    position: absolute;
+    bottom: 0%;
+    left: 80%;
+    width: 20%;
+    border: none;
+    background-color: rgba(76, 175, 255, 0.823);
+    height: 31px;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
 }

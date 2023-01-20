@@ -11,6 +11,9 @@ func StartServerHandler() {
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/login", loginPage)
 	http.HandleFunc("/register", registerPage)
+	http.HandleFunc("/mp", mpPage)
+	http.HandleFunc("/forum", forumPage)
+	http.HandleFunc("/account", accountPage)
 
 	// Static Files
 	fs := http.FileServer(http.Dir("./static/"))
