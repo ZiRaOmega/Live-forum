@@ -11,18 +11,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var db *sql.DB = nil
-
-func IsGoodCredentials(username string, password string) bool {
+func GetDB() *sql.DB {
+	db, err := sql.Open("sqlite3", "./sqlite-database.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return db
+}
+func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 	//Get Password from Database
 	var passwordFromDB string
 	err := db.QueryRow("SELECT password FROM user WHERE username = ?", username).Scan(&passwordFromDB)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	//Compare Passwords
 	err = bcrypt.CompareHashAndPassword([]byte(passwordFromDB), []byte(password))
+
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -30,7 +35,7 @@ func IsGoodCredentials(username string, password string) bool {
 	return true
 }
 
-func RegisterUser(username string, email string, age string, gender string, firstname string, lastname string, password string) {
+func RegisterUser(db *sql.DB, username string, email string, age string, gender string, firstname string, lastname string, password string) {
 	//Hash Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -38,7 +43,7 @@ func RegisterUser(username string, email string, age string, gender string, firs
 	}
 
 	//Insert User into Database
-	stmt, err := db.Prepare("INSERT INTO user(username, email, age, gender, firstname, lastname, password) VALUES(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO user(name, mail, age, gender, firstname, lastname, password) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,24 +54,26 @@ func RegisterUser(username string, email string, age string, gender string, firs
 	}
 }
 
-func DidUserExist(username string) bool {
+func DidUserExist(db *sql.DB, username string) bool {
 	//Get Password from Database
 	//Check if email or username already exists
-	var usernameFromDB string
-	err := db.QueryRow("SELECT username FROM user WHERE username = ?", username).Scan(&usernameFromDB)
+	SqlQuery := "SELECT name FROM user WHERE name = ?"
+	//prepare
+	stmt, err := db.Prepare(SqlQuery)
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
-	err = db.QueryRow("SELECT email FROM user WHERE email = ?", username).Scan(&usernameFromDB)
+	defer stmt.Close()
+	//execute
+	rows, err := stmt.Query(username)
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
-	return true
-
+	defer rows.Close()
+	//check if user exists
+	return rows.Next()
 }
-func CreatePost(Creator string, Title string, Content string, Categories []string, Comments []string) {
+func CreatePost(db *sql.DB, Creator string, Title string, Content string, Categories []string, Comments []string) {
 	//Insert Post into Database
 	stmt, err := db.Prepare("INSERT INTO posts(creator, title, content, categories, comments) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
@@ -79,7 +86,7 @@ func CreatePost(Creator string, Title string, Content string, Categories []strin
 	}
 }
 
-func CreatePrivateMessage(From string, To string, Content string, Date string) {
+func CreatePrivateMessage(db *sql.DB, From string, To string, Content string, Date string) {
 
 	//Insert Private Message into Database
 	stmt, err := db.Prepare("INSERT INTO private_messages(from, to, content, date) VALUES(?, ?, ?, ?)")
