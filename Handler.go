@@ -6,7 +6,6 @@ import (
 )
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	makeSql(w, r)
 	t := template.New("home")
 	t, _ = t.ParseFiles("templates/home.html")
 	//Parse all files in the templates/static folder
@@ -47,8 +46,4 @@ func accountPage(w http.ResponseWriter, r *http.Request) {
 	t, _ = t.ParseFiles("templates/account.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
 	t.ExecuteTemplate(w, "account", nil)
-}
-
-func makeSql(w http.ResponseWriter, r *http.Request) {
-	sqlMaker()
 }
