@@ -1,7 +1,7 @@
 {{define "register"}}
 {{template "header"}}
 <div class="popup">
-    <form>
+    <form id="registerForm">
         <label for="username">Username</label>
         <br>
         <input id="username" type="text" name="username" placeholder="Username">
@@ -34,8 +34,14 @@
         <br>
         <input id="password" type="password" name="password" placeholder="******">
         <br>
-        <input type="submit" class="pointer" value="Register" onsubmit="RegisterClick()">
+        <input type="submit" class="pointer" value="Register">
     </form>
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            RegisterClick();
+        });
+    </script>
 </div>
 {{template "footer"}}
 {{end}}

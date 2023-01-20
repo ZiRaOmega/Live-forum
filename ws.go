@@ -3,6 +3,7 @@ package main
 //Websocket
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -99,19 +100,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 // handle messages from websocket
 func MessageHandler(ws *websocket.Conn) {
+	db := GetDB()
+	defer db.Close()
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
 		//switch message type (login, register, post, private) and call function
 		switch Message.Message_Type {
 		case "login":
-			WsLogin(ws, Message)
+			WsLogin(db, ws, Message)
 		case "register":
-			WsRegister(ws, Message)
+			WsRegister(db, ws, Message)
 		case "post":
-			WsPost(ws, Message)
+			WsPost(db, ws, Message)
 		case "private":
-			WsPrivate(ws, Message)
+			WsPrivate(db, ws, Message)
 		case "hello":
 			fmt.Println(Message)
 		}
@@ -119,7 +122,7 @@ func MessageHandler(ws *websocket.Conn) {
 }
 
 // login user using websocket
-func WsLogin(ws *websocket.Conn, Message Message) { //Working
+func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { //Working
 	Content := LoginMessage{}
 	//convert interface to LoginMessage
 	json.Unmarshal(Message.ConvertInterface(), &Content)
@@ -127,7 +130,7 @@ func WsLogin(ws *websocket.Conn, Message Message) { //Working
 	Username := Content.Username
 	Password := Content.Password
 	Answer := ServerAnswer{Type: "login"}
-	if IsGoodCredentials(Username, Password) {
+	if IsGoodCredentials(db, Username, Password) {
 		//login
 		Answer.Answer = "success"
 		ws.WriteJSON(Answer)
@@ -146,7 +149,7 @@ func (m *Message) ConvertInterface() []byte {
 }
 
 // register user using websocket
-func WsRegister(ws *websocket.Conn, Message Message) {
+func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := RegisterMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//register user
@@ -158,22 +161,24 @@ func WsRegister(ws *websocket.Conn, Message Message) {
 	LastName := Content.LastName
 	Password := Content.Password
 	fmt.Println(Username, Email, Age, Gender, FirstName, LastName, Password)
-	Answer := ServerAnswer{Type: "register"}
-	if DidUserExist(Username) || DidUserExist(Email) {
+	//Answer := ServerAnswer{Type: "register"}
+	if DidUserExist(db, Username) || DidUserExist(db, Email) {
 		//error
-		Answer.Answer = "error"
-		ws.WriteJSON(Answer)
+		//Answer.Answer = "error"
+		//ws.WriteJSON(Answer)
+		fmt.Println("error")
 	} else {
 		//register
-		RegisterUser(Username, Email, Age, Gender, FirstName, LastName, Password)
-		Answer.Answer = "success"
-		ws.WriteJSON(Answer)
+		RegisterUser(db, Username, Email, Age, Gender, FirstName, LastName, Password)
+		//Answer.Answer = "success"
+		//ws.WriteJSON(Answer)
+		fmt.Println("success")
 	}
 
 }
 
 // post using websocket
-func WsPost(ws *websocket.Conn, Message Message) {
+func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := PostMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//post
@@ -182,13 +187,13 @@ func WsPost(ws *websocket.Conn, Message Message) {
 	Contentt := Content.Content
 	Categories := Content.Categories
 	Comments := Content.Comments
-	CreatePost(Creator, Title, Contentt, Categories, Comments)
+	CreatePost(db, Creator, Title, Contentt, Categories, Comments)
 	Answer := ServerAnswer{Answer: "success", Type: "post"}
 	ws.WriteJSON(Answer)
 }
 
 // private message using websocket
-func WsPrivate(ws *websocket.Conn, Message Message) {
+func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := PrivateMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	//private message
@@ -196,7 +201,7 @@ func WsPrivate(ws *websocket.Conn, Message Message) {
 	To := Content.To
 	Contentt := Content.Content
 	Date := Content.Date
-	CreatePrivateMessage(From, To, Contentt, Date)
+	CreatePrivateMessage(db, From, To, Contentt, Date)
 	Answer := ServerAnswer{Answer: "success", Type: "private"}
 	ws.WriteJSON(Answer)
 }

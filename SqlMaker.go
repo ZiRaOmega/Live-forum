@@ -33,21 +33,7 @@ func sqlMaker() {
 		// passtest, _ := HashPassword("test")
 
 		// fmt.Println(CheckPasswordHash("d", HashD), CheckPasswordHash("", HashD))
-		insertUser(sqliteDatabase, "Ulrik", "ulrik@ulrik.fr", "20", "M", "Ulrik", "Lefebvre", "test", "test.png", "admin")
-		insertUser(sqliteDatabase, "Homer", "homer@homer.fr", "20", "M", "Homer", "Simpson", "test", "test.png", "user")
-		insertUser(sqliteDatabase, "Marge", "marge@marge.fr", "20", "F", "Marge", "Simpson", "test", "test.png", "user")
-		createPostTable(sqliteDatabase)
-		createLikeTable(sqliteDatabase)
-		createDisLikeTable(sqliteDatabase)
-		createNotifsTable(sqliteDatabase)
-		insertPost(sqliteDatabase, "This is a test", "Ulrik", "cat.jpg", time.Now().Format(time.ANSIC), "Il fait beau, il fait chaud", "sun.img", 5, 1, 0, []string{"fun", "story"})
-		// DISPLAY INSERTED RECORDS
-		createCommentsTable(sqliteDatabase)
-		insertComment(sqliteDatabase, "BOUH C NUL !", "Homer", 1)
 
-		displayUsers(sqliteDatabase)
-		displayPosts(sqliteDatabase)
-		displayComments(sqliteDatabase)
 	}
 }
 
@@ -71,14 +57,11 @@ func createUserTable(db *sql.DB) {
 		"idUser" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"name" TEXT,
 		"mail" TEXT,
-		"password" TEXT,
 		"age" TEXT,
 		"gender" TEXT,
 		"firstname" TEXT,
 		"lastname" TEXT,
-		"profile_picture" TEXT,
-		"rank" TEXT
-
+		"password" TEXT
 	  );` // SQL Statement for Create Table
 
 	go Log("Create user table...")
@@ -337,7 +320,7 @@ func insertComment(db *sql.DB, comment string, usernames string, postID int) {
 func insertUser(db *sql.DB, name string, mail string, age string, gender string, firstname string, lastname string, password string, profile_picture string, rank string) {
 	EncodedPassword, _ := HashPassword(password)
 	go Log("[\033[33m>\033[0m] Inserting user record")
-	insertUserSQL := `INSERT INTO users (name, mail, age, gender, firstname, lastname, password, profile_picture, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	insertUserSQL := `INSERT INTO user (name, mail, age, gender, firstname, lastname, password, profile_picture, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	statement, err := db.Prepare(insertUserSQL) // Prepare statement.
 	// This is good to avoid SQL injections
 	if err != nil {

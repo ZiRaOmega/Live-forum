@@ -13,3 +13,4 @@ const FetchPage=(page)=>{
         document.body.innerHTML = data;
     });
 }
+
