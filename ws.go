@@ -12,6 +12,8 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/websocket"
+	//import uuid
+	UUID "github.com/satori/go.uuid"
 )
 
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
@@ -22,6 +24,7 @@ var (
 	clients   = make(map[*websocket.Conn]bool)
 	broadcast = make(chan Message)
 )
+var uuidUser = make(map[string]string)
 
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 type Message struct {
@@ -67,6 +70,7 @@ type PrivateMessage struct {
 // Used for sending answer to client
 type ServerAnswer struct {
 	Answer string `json:"answer"`
+	UUID   string `json:"uuid"`
 	Type   string `json:"type"`
 }
 
@@ -133,12 +137,18 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { //Working
 	if IsGoodCredentials(db, Username, Password) {
 		//login
 		Answer.Answer = "success"
+		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		ws.WriteJSON(Answer)
 	} else {
 		//error
 		Answer.Answer = "error"
 		ws.WriteJSON(Answer)
 	}
+}
+func CreateUserUUIDandStoreit(Username string) string {
+	uuid := UUID.NewV4()
+	uuidUser[uuid.String()] = Username
+	return uuid.String()
 }
 
 // convert interface to []byte for json

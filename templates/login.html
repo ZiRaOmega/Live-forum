@@ -1,7 +1,7 @@
 {{define "login"}}
 {{template "header"}}
 <div class="popup">
-    <form>
+    <form id="loginForm">
         <label for="username">Username</label>
         <br>
         <input id="username" type="text" name="username" placeholder="Username">
@@ -12,6 +12,12 @@
         <br>
         <input type="submit" class="pointer" value="Login" onsubmit="LoginClick()">
     </form>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            LoginClick();
+        });
+    </script>
 </div>
 
 {{template "footer"}}

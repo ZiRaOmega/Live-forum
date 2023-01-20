@@ -103,6 +103,15 @@ websocket.onmessage = function (event) {
                 alert("Error")
             }
             break;
+        case "login":
+            if (message.answer=="success"){
+                //Add message.uuid to cookies
+                document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                console.log(message.uuid)
+                SwitchPage("forum")
+            }else{
+                alert("Error")
+            }
         }
 }
 
