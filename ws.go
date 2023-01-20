@@ -181,6 +181,7 @@ func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 		//register
 		RegisterUser(db, Username, Email, Age, Gender, FirstName, LastName, Password)
 		Answer.Answer = "success"
+		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		ws.WriteJSON(Answer)
 		fmt.Println("success")
 	}
