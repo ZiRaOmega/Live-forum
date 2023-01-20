@@ -94,6 +94,16 @@ websocket.onopen = function (event) {
 }
 websocket.onmessage = function (event) {
     console.log(event.data);
+    var message = JSON.parse(event.data);
+    switch (message.type) {
+        case "register":
+            if (message.answer == "success") {
+                SwitchPage("login")
+            }else{
+                alert("Error")
+            }
+            break;
+        }
 }
 
 const login = () => {

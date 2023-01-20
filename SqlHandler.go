@@ -57,7 +57,7 @@ func RegisterUser(db *sql.DB, username string, email string, age string, gender 
 func DidUserExist(db *sql.DB, username string) bool {
 	//Get Password from Database
 	//Check if email or username already exists
-	SqlQuery := "SELECT name FROM user WHERE name = ?"
+	SqlQuery := "SELECT name FROM user WHERE name = ? or mail = ?"
 	//prepare
 	stmt, err := db.Prepare(SqlQuery)
 	if err != nil {
@@ -65,7 +65,7 @@ func DidUserExist(db *sql.DB, username string) bool {
 	}
 	defer stmt.Close()
 	//execute
-	rows, err := stmt.Query(username)
+	rows, err := stmt.Query(username, username)
 	if err != nil {
 		log.Fatal(err)
 	}
