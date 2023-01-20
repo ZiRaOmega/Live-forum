@@ -28,6 +28,27 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "register", nil)
 }
 
+func mpPage(w http.ResponseWriter, r *http.Request) {
+	t := template.New("mp")
+	t, _ = t.ParseFiles("templates/mp.html")
+	t, _ = t.ParseGlob("./templates/static/*.html")
+	t.ExecuteTemplate(w, "mp", nil)
+}
+
+func forumPage(w http.ResponseWriter, r *http.Request) {
+	t := template.New("forum")
+	t, _ = t.ParseFiles("templates/forum.html")
+	t, _ = t.ParseGlob("./templates/static/*.html")
+	t.ExecuteTemplate(w, "forum", nil)
+}
+
+func accountPage(w http.ResponseWriter, r *http.Request) {
+	t := template.New("account")
+	t, _ = t.ParseFiles("templates/account.html")
+	t, _ = t.ParseGlob("./templates/static/*.html")
+	t.ExecuteTemplate(w, "account", nil)
+}
+
 func makeSql(w http.ResponseWriter, r *http.Request) {
 	sqlMaker()
 }
