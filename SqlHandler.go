@@ -21,7 +21,7 @@ func GetDB() *sql.DB {
 func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 	//Get Password from Database
 	var passwordFromDB string
-	err := db.QueryRow("SELECT password FROM user WHERE username = ?", username).Scan(&passwordFromDB)
+	err := db.QueryRow("SELECT password FROM user WHERE name = ? or mail= ?", username, username).Scan(&passwordFromDB)
 	if err != nil {
 		log.Fatal(err)
 	}
