@@ -135,6 +135,15 @@ select {
 
 .pointer {
     cursor: pointer;
+    background-color: rgba(17, 217, 150, 0.653);
+    color: white;
+    font-weight: bold;
+}
+
+.pointer:hover {
+    background: rgb(34,193,195);
+background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100%);
+    transform: scale(1.05);
 }
 
 .conv {
@@ -196,6 +205,11 @@ select {
     color: white;
     font-weight: bold;
     cursor: pointer;
+}
+
+#sender_button:hover {
+    background: rgb(34,193,195);
+    background: linear-gradient(28deg, rgba(34,193,195,1) 0%, rgba(45,137,253,1) 100%);
 }
 
 .pp {
