@@ -197,3 +197,20 @@ select {
     font-weight: bold;
     cursor: pointer;
 }
+
+.pp {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: black;
+    margin: 10px;
+}
+
+.profile {
+    background-color:#fafafadf;
+    border: none;
+    border-radius: 8px;
+    width: 25%;
+    height: 25%;
+    margin: 25px;
+}
