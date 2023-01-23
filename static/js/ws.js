@@ -87,6 +87,24 @@ class PrivateMessage{
     }
 }
 
+class UuidMessage{
+    message = {
+        uuid: "",
+        username: "",
+        authenticated: "",
+        expires: "",
+    }
+    Stringify() {
+        return JSON.stringify(this.message);
+    }
+    constructor(uuid, username, authenticated, expires) {
+        this.message.uuid = uuid;
+        this.message.username = username;
+        this.message.authenticated = authenticated;
+        this.message.expires = expires;
+    }
+}
+
 var websocket = new WebSocket("ws://localhost:8080/ws");
 websocket.onopen = function (event) {
     console.log("Connected to server");
@@ -100,6 +118,7 @@ websocket.onmessage = function (event) {
             if (message.answer == "success") {
                 document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 console.log(message.uuid)
+                CreateUuidDataWS(message.uuid, username.value)
                 SwitchPage("forum")
             }else{
                 alert("Error")
@@ -110,6 +129,7 @@ websocket.onmessage = function (event) {
                 //Add message.uuid to cookies
                 document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 console.log(message.uuid)
+                CreateUuidDataWS(message.uuid, username.value)
                 SwitchPage("forum")
             }else{
                 alert("Error")
@@ -210,5 +230,12 @@ const CreatePrivateMessageWS = (from,to,content,date)=>{
     var privateMessage = new PrivateMessage(from,to,content,date)
     var message = new Message(from,privateMessage.Stringify(),"private")
     websocket.send(message.Stringify())
+}
+
+const CreateUuidDataWS = (uuid, username) => {
+    var uuidMessage = new UuidMessage(uuid,username)
+    var message = new Message(username,uuidMessage.Stringify(),"uuid")
+    websocket.send(message.Stringify())
+    console.log(uuid, username)
 }
 //

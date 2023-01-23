@@ -1,13 +1,14 @@
 package main
 
-//Import sql package
+// Import sql package
 import (
 	"database/sql"
 	"log"
+	"time"
 
-	//mattn/go-sqlite3
+	// mattn/go-sqlite3
 	_ "github.com/mattn/go-sqlite3"
-	//bcrypt
+	// bcrypt
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,14 +19,15 @@ func GetDB() *sql.DB {
 	}
 	return db
 }
+
 func IsGoodCredentials(db *sql.DB, username string, password string) bool {
-	//Get Password from Database
+	// Get Password from Database
 	var passwordFromDB string
 	err := db.QueryRow("SELECT password FROM user WHERE name = ? or mail= ?", username, username).Scan(&passwordFromDB)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//Compare Passwords
+	// Compare Passwords
 	err = bcrypt.CompareHashAndPassword([]byte(passwordFromDB), []byte(password))
 
 	if err != nil {
@@ -36,13 +38,13 @@ func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 }
 
 func RegisterUser(db *sql.DB, username string, email string, age string, gender string, firstname string, lastname string, password string) {
-	//Hash Password
+	// Hash Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//Insert User into Database
+	// Insert User into Database
 	stmt, err := db.Prepare("INSERT INTO user(name, mail, age, gender, firstname, lastname, password) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
@@ -55,26 +57,27 @@ func RegisterUser(db *sql.DB, username string, email string, age string, gender 
 }
 
 func DidUserExist(db *sql.DB, username string) bool {
-	//Get Password from Database
-	//Check if email or username already exists
+	// Get Password from Database
+	// Check if email or username already exists
 	SqlQuery := "SELECT name FROM user WHERE name = ? or mail = ?"
-	//prepare
+	// prepare
 	stmt, err := db.Prepare(SqlQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	//execute
+	// execute
 	rows, err := stmt.Query(username, username)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
-	//check if user exists
+	// check if user exists
 	return rows.Next()
 }
+
 func CreatePost(db *sql.DB, Creator string, Title string, Content string, Categories []string, Comments []string) {
-	//Insert Post into Database
+	// Insert Post into Database
 	stmt, err := db.Prepare("INSERT INTO posts(creator, title, content, categories, comments) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
@@ -87,14 +90,26 @@ func CreatePost(db *sql.DB, Creator string, Title string, Content string, Catego
 }
 
 func CreatePrivateMessage(db *sql.DB, From string, To string, Content string, Date string) {
-
-	//Insert Private Message into Database
+	// Insert Private Message into Database
 	stmt, err := db.Prepare("INSERT INTO private_messages(from, to, content, date) VALUES(?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(From, To, Content, Date)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func UuidInsert(db *sql.DB, uuid string, username string, authenticated string, expires string) {
+	// Insert UUID with associated username into Database
+	stmt, err := db.Prepare("INSERT INTO uuids(uuid, username, authenticated, expires) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(uuid, username, true, time.Now().AddDate(0, 0, +1))
 	if err != nil {
 		log.Fatal(err)
 	}

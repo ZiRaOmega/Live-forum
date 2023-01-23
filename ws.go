@@ -1,6 +1,6 @@
 package main
 
-//Websocket
+// Websocket
 
 import (
 	"database/sql"
@@ -8,11 +8,11 @@ import (
 	"log"
 	"net/http"
 
-	//import json
+	// import json
 	"encoding/json"
 
 	"github.com/gorilla/websocket"
-	//import uuid
+	// import uuid
 	UUID "github.com/satori/go.uuid"
 )
 
@@ -20,7 +20,8 @@ import (
 var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
-		WriteBufferSize: 1024}
+		WriteBufferSize: 1024,
+	}
 	clients   = make(map[*websocket.Conn]bool)
 	broadcast = make(chan Message)
 )
@@ -74,6 +75,14 @@ type ServerAnswer struct {
 	Type   string `json:"type"`
 }
 
+// Used for registering uuid and username in database
+type UuidMessage struct {
+	Uuid          string `json:"uuid"`
+	Username      string `json:"username"`
+	Authenticated string `json:"authenticated"`
+	Expires       string `json:"expires"`
+}
+
 // handle messages from websocket
 func ListenforMessages(ws *websocket.Conn) {
 	go MessageHandler(ws)
@@ -99,7 +108,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	clients[ws] = true
 
 	go ListenforMessages(ws)
-
 }
 
 // handle messages from websocket
@@ -109,7 +117,7 @@ func MessageHandler(ws *websocket.Conn) {
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
-		//switch message type (login, register, post, private) and call function
+		// switch message type (login, register, post, private) and call function
 		switch Message.Message_Type {
 		case "login":
 			WsLogin(db, ws, Message)
@@ -117,6 +125,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsRegister(db, ws, Message)
 		case "post":
 			WsPost(db, ws, Message)
+		case "uuid":
+			WsUuid(db, ws, Message)
 		case "private":
 			WsPrivate(db, ws, Message)
 		case "hello":
@@ -126,25 +136,26 @@ func MessageHandler(ws *websocket.Conn) {
 }
 
 // login user using websocket
-func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { //Working
+func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 	Content := LoginMessage{}
-	//convert interface to LoginMessage
+	// convert interface to LoginMessage
 	json.Unmarshal(Message.ConvertInterface(), &Content)
-	//login user
+	// login user
 	Username := Content.Username
 	Password := Content.Password
 	Answer := ServerAnswer{Type: "login"}
 	if IsGoodCredentials(db, Username, Password) {
-		//login
+		// login
 		Answer.Answer = "success"
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		ws.WriteJSON(Answer)
 	} else {
-		//error
+		// error
 		Answer.Answer = "error"
 		ws.WriteJSON(Answer)
 	}
 }
+
 func CreateUserUUIDandStoreit(Username string) string {
 	uuid := UUID.NewV4()
 	uuidUser[uuid.String()] = Username
@@ -153,7 +164,7 @@ func CreateUserUUIDandStoreit(Username string) string {
 
 // convert interface to []byte for json
 func (m *Message) ConvertInterface() []byte {
-	//convert Message to []byte
+	// convert Message to []byte
 	Mes := m.Message.(string)
 	return []byte(Mes)
 }
@@ -162,7 +173,7 @@ func (m *Message) ConvertInterface() []byte {
 func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := RegisterMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
-	//register user
+	// register user
 	Username := Content.Username
 	Email := Content.Email
 	Age := Content.Age
@@ -173,26 +184,25 @@ func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 	fmt.Println(Username, Email, Age, Gender, FirstName, LastName, Password)
 	Answer := ServerAnswer{Type: "register"}
 	if DidUserExist(db, Username) || DidUserExist(db, Email) {
-		//error
+		// error
 		Answer.Answer = "error"
 		ws.WriteJSON(Answer)
 		fmt.Println("error")
 	} else {
-		//register
+		// register
 		RegisterUser(db, Username, Email, Age, Gender, FirstName, LastName, Password)
 		Answer.Answer = "success"
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		ws.WriteJSON(Answer)
 		fmt.Println("success")
 	}
-
 }
 
 // post using websocket
 func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := PostMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
-	//post
+	// post
 	Creator := Content.Creator
 	Title := Content.Title
 	Contentt := Content.Content
@@ -207,12 +217,26 @@ func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := PrivateMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
-	//private message
+	// private message
 	From := Content.From
 	To := Content.To
 	Contentt := Content.Content
 	Date := Content.Date
 	CreatePrivateMessage(db, From, To, Contentt, Date)
+	Answer := ServerAnswer{Answer: "success", Type: "private"}
+	ws.WriteJSON(Answer)
+}
+
+// uuid message using websocket
+func WsUuid(db *sql.DB, ws *websocket.Conn, Message Message) {
+	Content := UuidMessage{}
+	json.Unmarshal(Message.ConvertInterface(), &Content)
+	// private message
+	Uuid := Content.Uuid
+	Username := Content.Username
+	Authenticated := Content.Authenticated
+	Expires := Content.Expires
+	UuidInsert(db, Uuid, Username, Authenticated, Expires)
 	Answer := ServerAnswer{Answer: "success", Type: "private"}
 	ws.WriteJSON(Answer)
 }
