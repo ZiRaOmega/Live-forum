@@ -118,7 +118,6 @@ websocket.onmessage = function (event) {
             if (message.answer == "success") {
                 document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 console.log(message.uuid)
-                CreateUuidDataWS(message.uuid, username.value)
                 SwitchPage("forum")
             }else{
                 alert("Error")
@@ -129,11 +128,11 @@ websocket.onmessage = function (event) {
                 //Add message.uuid to cookies
                 document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 console.log(message.uuid)
-                CreateUuidDataWS(message.uuid, username.value)
                 SwitchPage("forum")
             }else{
                 alert("Error")
             }
+            break;
         }
 }
 
@@ -193,6 +192,7 @@ function LoginClick() {
     var username = document.getElementById('username').value
     var password = document.getElementById('password').value
     CreateLoginWS(username,password)
+    console.log(username)
     return false;
 }
 
@@ -232,10 +232,3 @@ const CreatePrivateMessageWS = (from,to,content,date)=>{
     websocket.send(message.Stringify())
 }
 
-const CreateUuidDataWS = (uuid, username) => {
-    var uuidMessage = new UuidMessage(uuid,username)
-    var message = new Message(username,uuidMessage.Stringify(),"uuid")
-    websocket.send(message.Stringify())
-    console.log(uuid, username)
-}
-//
