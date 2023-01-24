@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 )
@@ -46,4 +47,39 @@ func accountPage(w http.ResponseWriter, r *http.Request) {
 	t, _ = t.ParseFiles("templates/account.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
 	t.ExecuteTemplate(w, "account", nil)
+}
+
+// LE PROBLEME VIENT DE LA FONCTION CI-DESSOUS
+func uuidCheck(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	case "POST":
+		type uuid struct {
+			UUID     string `json:"uuid"`
+			Username string `json:"username"`
+		}
+		var u uuid
+		db := GetDB()
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&u)
+		if err != nil {
+			panic(err)
+		}
+		defer db.Close()
+		defer r.Body.Close()
+		// Check if the UUID is in the database
+		/* if UUIDandUsernameMatch(db, u.UUID) {
+			// If it is, send 200
+			w.WriteHeader(http.StatusOK)
+		} else {
+			// If it isn't, send 404
+			w.WriteHeader(http.StatusNotFound)
+		} */
+		if uuidUser[u.UUID] != "" {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}
 }

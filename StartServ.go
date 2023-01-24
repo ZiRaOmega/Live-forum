@@ -14,6 +14,7 @@ func StartServerHandler() {
 	http.HandleFunc("/mp", mpPage)
 	http.HandleFunc("/forum", forumPage)
 	http.HandleFunc("/account", accountPage)
+	http.HandleFunc("/uuidcheck", uuidCheck)
 
 	// Static Files
 	fs := http.FileServer(http.Dir("./static/"))

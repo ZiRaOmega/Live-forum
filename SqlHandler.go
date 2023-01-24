@@ -4,6 +4,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"strconv"
 	"time"
 
 	// mattn/go-sqlite3
@@ -110,6 +111,38 @@ func UuidInsert(db *sql.DB, uuid string, username string, authenticated string, 
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(uuid, username, true, time.Now().AddDate(0, 0, +1))
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func UUIDandUsernameMatch(db *sql.DB, uuid string) bool {
+	// Get Username and expires from Database
+	var usernameFromDB string
+	var expires string
+	err := db.QueryRow("SELECT username, expires FROM uuids WHERE uuid = ?", uuid).Scan(&usernameFromDB, &expires)
+	if err != nil {
+		log.Fatal(err)
+	}
+	username := uuidUser[uuid]
+	// Compare Usernames
+	//convert expire to time.Time
+	expiresInt, err := strconv.ParseInt(expires, 10, 64)
+	expireconverted := time.Unix(expiresInt, 0)
+	if usernameFromDB != username || expireconverted.Before(time.Now()) {
+		return false
+	}
+	return true
+}
+
+func CreateUUIDTable(db *sql.DB) {
+	// Create UUID Table
+	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS uuids(uuid TEXT PRIMARY KEY, username TEXT, authenticated TEXT, expires TEXT)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -125,8 +125,6 @@ func MessageHandler(ws *websocket.Conn) {
 			WsRegister(db, ws, Message)
 		case "post":
 			WsPost(db, ws, Message)
-		case "uuid":
-			WsUuid(db, ws, Message)
 		case "private":
 			WsPrivate(db, ws, Message)
 		case "hello":
@@ -144,10 +142,13 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 	Username := Content.Username
 	Password := Content.Password
 	Answer := ServerAnswer{Type: "login"}
+	fmt.Println(Username, Password)
 	if IsGoodCredentials(db, Username, Password) {
 		// login
 		Answer.Answer = "success"
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
+		UuidInsert(db, Answer.UUID, Username, "true", "1")
+		fmt.Println(uuidUser)
 		ws.WriteJSON(Answer)
 	} else {
 		// error
@@ -159,6 +160,7 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 func CreateUserUUIDandStoreit(Username string) string {
 	uuid := UUID.NewV4()
 	uuidUser[uuid.String()] = Username
+
 	return uuid.String()
 }
 
@@ -223,20 +225,6 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Contentt := Content.Content
 	Date := Content.Date
 	CreatePrivateMessage(db, From, To, Contentt, Date)
-	Answer := ServerAnswer{Answer: "success", Type: "private"}
-	ws.WriteJSON(Answer)
-}
-
-// uuid message using websocket
-func WsUuid(db *sql.DB, ws *websocket.Conn, Message Message) {
-	Content := UuidMessage{}
-	json.Unmarshal(Message.ConvertInterface(), &Content)
-	// private message
-	Uuid := Content.Uuid
-	Username := Content.Username
-	Authenticated := Content.Authenticated
-	Expires := Content.Expires
-	UuidInsert(db, Uuid, Username, Authenticated, Expires)
 	Answer := ServerAnswer{Answer: "success", Type: "private"}
 	ws.WriteJSON(Answer)
 }
