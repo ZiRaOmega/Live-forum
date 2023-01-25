@@ -1,6 +1,7 @@
-const SwitchPage=(page)=>{
+const SwitchPage=async (page)=>{
     if (page=="forum"){
-        if (checkuuid()){
+        console.log(await checkuuid())
+        if (await checkuuid()){
             console.log("uuid is valid")
             page="forum"
         }else{
@@ -23,7 +24,7 @@ const FetchPage=(page)=>{
     });
 }
 //LE PROBLEME VIENT DE LA FONCTION CHECKUUID
-const checkuuid=()=>{
+const checkuuid=async ()=>{
     console.log(document.cookie)
     if (UUID==""){
         console.log("here")
