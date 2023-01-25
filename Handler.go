@@ -81,7 +81,7 @@ func uuidCheck(w http.ResponseWriter, r *http.Request) {
 		if uuidUser[u.UUID] != "" {
 			w.WriteHeader(http.StatusOK)
 		} else {
-			w.WriteHeader(http.StatusNotFound)
+			w.WriteHeader(http.StatusForbidden)
 		}
 	}
 }

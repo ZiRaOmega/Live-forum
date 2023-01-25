@@ -17,15 +17,16 @@
     </div>
     <div class="header__menu">
         <ul>
-            <li><a onclick="SwitchPage('login')">Login</a></li>
-            <li><a onclick="SwitchPage('register')">Register</a></li>
-            <li><a onclick="SwitchPage('forum')">Forum</a></li>
-            <li><a onclick="SwitchPage('mp')">MP</a></li>
-            <li><a onclick="SwitchPage('account')">Account</a></li>
+            <li><a onclick="router.navigate('/login')">Login</a></li>
+            <li><a onclick="router.navigate('/register')">Register</a></li>
+            <li><a onclick="router.navigate('/forum')">Forum</a></li>
+            <li><a onclick="router.navigate('/mp')">MP</a></li>
+            <li><a onclick="router.navigate('/account')">Account</a></li>
         </ul>
     </div>
-    <div id="user" onclick="SwitchPage('account')">Guest</div>
+    <div id="user" onclick="router.navigate('/account')">Guest</div>
 </div>
+<script src="../../static/js/router.js"></script>
 <script src="../../static/js/easter_egg.js"></script>
 {{template "js"}}
 {{end}}
