@@ -104,7 +104,7 @@ class UuidMessage{
         this.message.expires = expires;
     }
 }
-
+var UUID = ""
 var websocket = new WebSocket("ws://localhost:8080/ws");
 websocket.onopen = function (event) {
     console.log("Connected to server");
@@ -117,6 +117,7 @@ websocket.onmessage = function (event) {
         case "register":
             if (message.answer == "success") {
                 document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                UUID=message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
             }else{
@@ -127,6 +128,7 @@ websocket.onmessage = function (event) {
             if (message.answer=="success"){
                 //Add message.uuid to cookies
                 document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                UUID=message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
             }else{
