@@ -1,4 +1,6 @@
 var loginsubmit = document.getElementById('loginsubmit');
-loginsubmit.addEventListener('click', function() {
-    return LoginClick();
-});
+if (loginsubmit !== null) {
+    loginsubmit.addEventListener('click', function() {
+        return LoginClick();
+    });
+}

@@ -1,4 +1,4 @@
-const SwitchPage=async (page)=>{
+let SwitchPage=async (page)=>{
     if (page=="forum"){
         console.log(await checkuuid())
         if (await checkuuid()){
@@ -16,36 +16,39 @@ const SwitchPage=async (page)=>{
     history.pushState({}, page, page);
     
 }
-const FetchPage=(page)=>{
-    fetch(`/${page}`)
-    .then(response => response.text())
-    .then(data => {
-        document.body.innerHTML = data;
-    });
+const FetchPage = async (page) => {
+    await fetch(page)
+        .then(response => response.text())
+        .then(data => {
+            document.body.innerHTML = data;
+        });
 }
-//LE PROBLEME VIENT DE LA FONCTION CHECKUUID
-const checkuuid=async ()=>{
-    console.log(document.cookie)
-    if (UUID==""){
-        console.log("here")
-        SwitchPage("login")
-    }else{
-        //Post request fetch to /uuidcheck if 200, then switch to main page else switch to login page
-        return fetch("/uuidcheck", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                uuid: UUID
-            })
-        }).then(res => {
-            console.log(res.status)
-            if (res.status == 200){
-                return true
-            }else{
-                return false
-            }
+
+///////////////////////////////////////////////////////////
+
+const _IsAuthorized = async () => {
+    return await fetch("/uuidcheck", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            uuid: UUID,
         })
+    }).then(r => r.status === 200);
+};
+
+const _SwitchPage = async (pageId) => {
+    pageId = "/" + pageId;
+    if (pageId === "/forum") {
+        const isAuthorized = await _IsAuthorized();
+        if (!isAuthorized) pageId = "/login";
     }
-}
+
+    await FetchPage(pageId);
+    history.pushState({
+        urlPath: pageId,
+    }, "", pageId);
+};
+
+SwitchPage = _SwitchPage;
