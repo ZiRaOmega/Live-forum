@@ -195,6 +195,7 @@ function LoginClick() {
     var password = document.getElementById('password').value
     CreateLoginWS(username,password)
     console.log(username)
+    document.getElementById('user').innerHTML = username
     return false;
 }
 
