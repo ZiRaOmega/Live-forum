@@ -24,10 +24,11 @@ const FetchPage=(page)=>{
 }
 //LE PROBLEME VIENT DE LA FONCTION CHECKUUID
 const checkuuid=()=>{
-    if (document.cookie.indexOf("uuid") == -1){
+    console.log(document.cookie)
+    if (UUID==""){
+        console.log("here")
         SwitchPage("login")
     }else{
-        UUID = document.cookie.split("uuid=")[1].split(";")[0]
         //Post request fetch to /uuidcheck if 200, then switch to main page else switch to login page
         return fetch("/uuidcheck", {
             method: "POST",

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -76,6 +77,7 @@ func uuidCheck(w http.ResponseWriter, r *http.Request) {
 			// If it isn't, send 404
 			w.WriteHeader(http.StatusNotFound)
 		} */
+		fmt.Println(u.UUID)
 		if uuidUser[u.UUID] != "" {
 			w.WriteHeader(http.StatusOK)
 		} else {
