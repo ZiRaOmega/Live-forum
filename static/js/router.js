@@ -1,5 +1,7 @@
 
 // A simple router in vanilla javascript
+// Should be global and stay alive at all time.
+// Register load.
 
 const router = {
     root: document.body,
@@ -13,27 +15,28 @@ const router = {
     },
     request: async(pathname) => {
         const route = router.routes[pathname];
-        const cachedRouteData = sessionStorage.getItem(pathname);
-        if (cachedRouteData !== null) return cachedRouteData;
-        const data = await fetch(route.from, { cache: "no-cache" })
+        return await fetch(route.from, { cache: "no-cache" })
             .then(r => r.text());
-        sessionStorage.setItem(pathname, data);
-        return data;
     },
-    navigate: async(pathname) => {
+    navigate: async(event, pathname) => {
+        if (event) event.preventDefault();
         window.history.pushState(
             {},
             pathname,
             window.location.origin + pathname
         );
         router.root.innerHTML = await router.request(pathname);
+        
+        const navigateEvent = new Event("navigate");
+        dispatchEvent(navigateEvent);
     },
 };
 
 window.addEventListener('DOMContentLoaded', async () => {
-    const data = await router.request(window.location.pathname);
-    console.log(data);
-    router.root.innerHTML = data;
+    router.root.innerHTML = await router.request(window.location.pathname);
+
+    const navigateEvent = new Event("navigate");
+    dispatchEvent(navigateEvent);
 });
 
 window.addEventListener('popstate', async () => {
