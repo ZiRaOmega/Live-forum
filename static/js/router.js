@@ -13,8 +13,12 @@ const router = {
     },
     request: async(pathname) => {
         const route = router.routes[pathname];
-        return fetch(route.from, { cache: "default" },)
+        const cachedRouteData = sessionStorage.getItem(pathname);
+        if (cachedRouteData !== null) return cachedRouteData;
+        const data = await fetch(route.from, { cache: "no-cache" })
             .then(r => r.text());
+        sessionStorage.setItem(pathname, data);
+        return data;
     },
     navigate: async(pathname) => {
         window.history.pushState(
@@ -26,6 +30,12 @@ const router = {
     },
 };
 
-window.onpopstate = async () => {
+window.addEventListener('DOMContentLoaded', async () => {
+    const data = await router.request(window.location.pathname);
+    console.log(data);
+    router.root.innerHTML = data;
+});
+
+window.addEventListener('popstate', async () => {
     router.root.innerHTML = await router.request(window.location.pathname);
-};
+});
