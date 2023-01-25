@@ -10,7 +10,7 @@ import (
 func homePage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("home")
 	t, _ = t.ParseFiles("templates/home.html")
-	//Parse all files in the templates/static folder
+	// Parse all files in the templates/static folder
 	t, _ = t.ParseGlob("./templates/static/*.html")
 	t.ExecuteTemplate(w, "home", nil)
 }

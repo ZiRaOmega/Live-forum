@@ -193,6 +193,7 @@ const TestRegister=()=>{
 function LoginClick() {
     var username = document.getElementById('username').value
     var password = document.getElementById('password').value
+    document.cookie = "username=" + username;
     CreateLoginWS(username,password)
     console.log(username)
     document.getElementById('user').innerHTML = username
