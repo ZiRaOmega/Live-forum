@@ -12,40 +12,47 @@ import (
 	bcrypt "golang.org/x/crypto/bcrypt" // Import bcrypt library
 )
 
-func sqlMaker() {
-	if !fileExists("sqlite-database.db") {
-		os.Remove("sqlite-database.db") // I delete the file to avoid duplicated records.
-		// SQLite is a file based database.
+type Profile struct {
+	Username string
+	Email    string
+	Password string
+}
 
-		go Log("Creating sqlite-database.db...")
-		file, err := os.Create("sqlite-database.db") // Create SQLite file
+const SQLITE_DATABASE_PATH = "./sqlite-database.db"
+
+// Do not use that, don't mind that. Just use GetDB
+var private_db *sql.DB = nil
+
+// Return a pointer (handle) to the database if open
+// else open it
+func GetDB() *sql.DB {
+	if private_db == nil {
+		var err error = nil
+		private_db, err = sql.Open("sqlite3", SQLITE_DATABASE_PATH)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal(err)
 		}
-		file.Close()
-		go Log("sqlite-database.db created")
+	}
+	return private_db
+}
 
-		sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
-		defer sqliteDatabase.Close()                                     // Defer Closing the database
-		createUserTable(sqliteDatabase)                                  // Create Database Tables
-
-		// INSERT RECORDS
-		// passtest, _ := HashPassword("test")
-
-		// fmt.Println(CheckPasswordHash("d", HashD), CheckPasswordHash("", HashD))
-
+func CloseDB() {
+	if private_db != nil {
+		private_db.Close()
 	}
 }
 
-func ConnectToDB() *sql.DB {
-	sqlMaker()
-	// Open the created SQLite File
-	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db")
-	return sqliteDatabase
-}
+func sqlMaker(db *sql.DB) {
+	// Create Database Tables
+	createMpTable(db)
+	createUserTable(db)
+	CreateUUIDTable(db)
+	createConversationsTable(db)
 
-func DisconnectFromDB(db *sql.DB) {
-	db.Close()
+	// INSERT RECORDS
+	// passtest, _ := HashPassword("test")
+
+	// fmt.Println(CheckPasswordHash("d", HashD), CheckPasswordHash("", HashD))
 }
 
 func Log(texttolog ...interface{}) {
@@ -53,7 +60,7 @@ func Log(texttolog ...interface{}) {
 }
 
 func createUserTable(db *sql.DB) {
-	createUserTableSQL := `CREATE TABLE user (
+	createUserTableSQL := `CREATE TABLE IF NOT EXISTS user (
 		"idUser" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"name" TEXT,
 		"mail" TEXT,
@@ -64,17 +71,15 @@ func createUserTable(db *sql.DB) {
 		"password" TEXT
 	  );` // SQL Statement for Create Table
 
-	go Log("Create user table...")
 	statement, err := db.Prepare(createUserTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("user table created")
 }
 
 func createNotifsTable(db *sql.DB) {
-	createNotifsTableSQL := `CREATE TABLE notifs (
+	createNotifsTableSQL := `CREATE TABLE IF NOT EXISTS notifs (
 		"commentID" integer,
 		"username" TEXT,
 		"liked" BIT,
@@ -85,45 +90,39 @@ func createNotifsTable(db *sql.DB) {
 
 	  );` // SQL Statement for Create Table
 
-	go Log("Create notifs table...")
 	statement, err := db.Prepare(createNotifsTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("notifs table created")
 }
 
 func createLikeTable(db *sql.DB) {
-	createLikeTableSQL := `CREATE TABLE likes (
+	createLikeTableSQL := `CREATE TABLE IF NOT EXISTS likes (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"username" TEXT,
 		"postID" integer,
 		FOREIGN KEY(postID) REFERENCES post(idPost) 
 	);`
-	go Log("Create likes table...")
 	statement, err := db.Prepare(createLikeTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("likes table created")
 }
 
 func createDisLikeTable(db *sql.DB) {
-	createLikeTableSQL := `CREATE TABLE dislikes (
+	createLikeTableSQL := `CREATE TABLE IF NOT EXISTS dislikes (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"username" TEXT,
 		"postID" integer,
 		FOREIGN KEY(postID) REFERENCES post(idPost) 
 	);`
-	go Log("Create Dislikes table...")
 	statement, err := db.Prepare(createLikeTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("Dislikes table created")
 }
 
 func insertLike(db *sql.DB, username string, postID int) {
@@ -239,7 +238,7 @@ func AddOneComment(db *sql.DB, idPost int) {
 }
 
 func createCommentsTable(db *sql.DB) {
-	createCommentsTableSQL := `CREATE TABLE comments (
+	createCommentsTableSQL := `CREATE TABLE IF NOT EXISTS comments (
 		"commentID" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"comment" TEXT,
 		"username" TEXT,
@@ -255,17 +254,15 @@ func createCommentsTable(db *sql.DB) {
 	// The FOREIGN KEY constraint requires that the referenced columns are indexed.
 	// The FOREIGN KEY constraint requires that the referenced columns are NOT NULL.
 
-	go Log("Create commentaries table...")
 	statement, err := db.Prepare(createCommentsTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("commentaries table created")
 }
 
 func createPostTable(db *sql.DB) {
-	createPostTableSQL := `CREATE TABLE post (
+	createPostTableSQL := `CREATE TABLE IF NOT EXISTS post (
 		"idPost" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"title" TEXT,
 		"username" TEXT,
@@ -280,13 +277,40 @@ func createPostTable(db *sql.DB) {
 
 	  );` // SQL Statement for Create Table
 
-	go Log("Create post table...")
 	statement, err := db.Prepare(createPostTableSQL) // Prepare SQL Statement
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	go Log("post table created")
+}
+
+func createMpTable(db *sql.DB) {
+	createMpTableSQL := `CREATE TABLE IF NOT EXISTS mp (
+        "sender" TEXT,        
+        "receiver" TEXT,
+        "content" TEXT,
+        "date" TEXT
+      );` // SQL Statement for Create Table
+
+	statement, err := db.Prepare(createMpTableSQL) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
+}
+
+func createConversationsTable(db *sql.DB) {
+	createConversationsTableSQL := `CREATE TABLE IF NOT EXISTS conversations (
+        "sender" TEXT,        
+        "receiver" TEXT,
+        "lastMessage" TEXT
+      );` // SQL Statement for Create Table
+
+	statement, err := db.Prepare(createConversationsTableSQL) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
 }
 
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
@@ -621,4 +645,65 @@ func getLatestCommentID(db *sql.DB) int {
 		return commentID
 	}
 	return 0
+}
+
+func IsOnline(Username string) bool {
+	for k, v := range UserCookie {
+		if k == Username && v.Expires.After(time.Now()) {
+			return true
+		}
+	}
+	return false
+}
+
+func GetAllUsers(db *sql.DB) (AllUSers []User) {
+	row, err := db.Query("SELECT name FROM user ORDER BY name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() { // Iterate and fetch the records from result cursor
+		var name string
+		row.Scan(&name)
+		AllUSers = append(AllUSers, User{Username: name})
+	}
+	return AllUSers
+}
+
+func GetProfileInfo(db *sql.DB, username string) Profile {
+	var profile Profile
+	row, err := db.Query("SELECT * FROM user ORDER BY name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() { // Iterate and fetch the records from result cursor
+		var id int
+		var name string
+		var mail string
+		var password string
+		row.Scan(&id, &name, &mail, &password)
+		if username == name {
+			profile = Profile{Username: name, Email: mail, Password: password}
+		}
+	}
+	return profile
+}
+
+func GetOnlineUsers(db *sql.DB) []User {
+	var result []User
+	row, err := db.Query("SELECT * FROM user")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() {
+		var id int
+		var name string
+		var mail string
+		var password string
+		row.Scan(&id, &name, &mail, &password)
+		result = append(result, User{Username: name})
+	}
+	return result
 }

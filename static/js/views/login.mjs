@@ -7,5 +7,5 @@ export default `<div class="popup">
 <br>
 <input id="password" type="password" name="password" placeholder="******">
 <br>
-<input id="loginsubmit" type="submit" class="pointer" value="Login">
+<input id="loginsubmit" type="submit" class="pointer" onclick="return LoginClick()" value="Login">
 </div>`;

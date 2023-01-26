@@ -119,7 +119,6 @@ websocket.onmessage = function (event) {
                 document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 UUID=message.uuid
                 console.log(message.uuid)
-                SwitchPage("forum")
             }else{
                 alert("Error")
             }
@@ -130,7 +129,6 @@ websocket.onmessage = function (event) {
                 document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
                 UUID=message.uuid
                 console.log(message.uuid)
-                SwitchPage("forum")
             }else{
                 alert("Error")
             }
@@ -197,6 +195,7 @@ function LoginClick() {
     CreateLoginWS(username,password)
     console.log(username)
     document.getElementById('user').innerHTML = username
+    router.navigate(event, '/forum')
     return false;
 }
 

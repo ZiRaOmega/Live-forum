@@ -23,13 +23,16 @@ func main() {
 		}
 		SendIndex(w, r)
 	})
+	http.HandleFunc("/ws", wsHandler)
 
+	db := GetDB()
+	sqlMaker(db)
+	defer CloseDB()
 	for _, pattern := range []string{"/login", "/register", "/pm", "/forum", "/account"} {
 		http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 			SendIndex(w, r)
 		})
 	}
-
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	fmt.Println("http://localhost:8080/")
