@@ -77,8 +77,8 @@ func uuidCheck(w http.ResponseWriter, r *http.Request) {
 			// If it isn't, send 404
 			w.WriteHeader(http.StatusNotFound)
 		} */
-		fmt.Println(u.UUID)
-		if uuidUser[u.UUID] != "" {
+		fmt.Println("UUID: "+u.UUID, "Username: "+u.Username)
+		if uuidUser[u.UUID] == u.Username {
 			w.WriteHeader(http.StatusOK)
 		} else {
 			w.WriteHeader(http.StatusNotFound)

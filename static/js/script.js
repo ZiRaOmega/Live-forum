@@ -40,7 +40,8 @@ const checkuuid=async ()=>{
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                uuid: UUID
+                uuid: UUID,
+                username: Username
             })
         }).then(res => {
             console.log(res.status)
