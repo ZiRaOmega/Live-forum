@@ -9,8 +9,8 @@
     <br>
     <input id="password" type="password" name="password" placeholder="******">
     <br>
-    <input id="loginsubmit" type="submit" class="pointer" value="Login">
+    <input id="loginsubmit" type="submit" class="pointer" value="Login" onclick="return LoginClick()">
 </div>
-<script src="/static/js/login.js"></script>
+{{template "js"}}
 {{template "footer"}}
 {{end}}

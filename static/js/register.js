@@ -1,4 +1,4 @@
-var registersubmit = document.getElementById('registersubmit');
+/* var registersubmit = document.getElementById('registersubmit');
 registersubmit.addEventListener('click', function() {
     return RegisterClick();
-});
+}); */

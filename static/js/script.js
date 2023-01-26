@@ -9,20 +9,23 @@ const SwitchPage=async (page)=>{
             page="login"
         }
     }
-    FetchPage(page);
+    await FetchPage(page);
+    document.getElementById('user').innerText=Username
     if(page==""){
         page="/";
     }
     history.pushState({}, page, page);
     
 }
-const FetchPage=(page)=>{
-    fetch(`/${page}`)
+const FetchPage=async (page)=>{
+    await fetch(`/${page}`)
     .then(response => response.text())
     .then(data => {
         document.body.innerHTML = data;
     });
 }
+var UUID = ""
+var Username = ""
 //LE PROBLEME VIENT DE LA FONCTION CHECKUUID
 const checkuuid=async ()=>{
     console.log(document.cookie)

@@ -104,7 +104,7 @@ class UuidMessage{
         this.message.expires = expires;
     }
 }
-var UUID = ""
+
 var websocket = new WebSocket("ws://localhost:8080/ws");
 websocket.onopen = function (event) {
     console.log("Connected to server");
@@ -194,6 +194,7 @@ function LoginClick() {
     var username = document.getElementById('username').value
     var password = document.getElementById('password').value
     document.cookie = "username=" + username;
+    Username = username
     CreateLoginWS(username,password)
     console.log(username)
     document.getElementById('user').innerHTML = username
@@ -215,6 +216,7 @@ function RegisterClick() {
     var lastname = document.getElementById('lastname').value
     var password = document.getElementById('password').value
     CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
+    Username=username
     return false;
 }
 
