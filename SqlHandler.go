@@ -25,14 +25,13 @@ func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 	// Get Password from Database
 	var passwordFromDB string
 	err := db.QueryRow("SELECT password FROM user WHERE name = ? or mail= ?", username, username).Scan(&passwordFromDB)
-	if err != nil {
-		log.Fatal(err)
+	if err != nil || passwordFromDB == "" {
+		return false
 	}
 	// Compare Passwords
 	err = bcrypt.CompareHashAndPassword([]byte(passwordFromDB), []byte(password))
 
 	if err != nil {
-		log.Fatal(err)
 		return false
 	}
 	return true
