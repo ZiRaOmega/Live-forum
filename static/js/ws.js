@@ -109,6 +109,16 @@ var websocket = new WebSocket("ws://localhost:8080/ws");
 websocket.onopen = function (event) {
     console.log("Connected to server");
     HelloWorld();
+    //if cookies contains uuid then UUID=cookies.uuid
+    var cookies = document.cookie.split(";")
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].split("=")
+        if (cookie[0] == "uuid") {
+            UUID = cookie[1]
+        }else if (cookie[0] == "username") {
+            Username = cookie[1]
+        }
+    }
 }
 websocket.onmessage = function (event) {
     console.log(event.data);
@@ -116,7 +126,10 @@ websocket.onmessage = function (event) {
     switch (message.type) {
         case "register":
             if (message.answer == "success") {
-                document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                expire=new Date()
+                expire.setFullYear(expire.getFullYear()+1)
+
+                document.cookie = "uuid=" + message.uuid + "; expires="+expire.toUTCString();
                 UUID=message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
@@ -126,8 +139,10 @@ websocket.onmessage = function (event) {
             break;
         case "login":
             if (message.answer=="success"){
+                expire=new Date()
+                expire.setFullYear(expire.getFullYear()+1)
                 //Add message.uuid to cookies
-                document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                document.cookie = "uuid="+message.uuid+"; expires="+expire.toUTCString();
                 UUID=message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
@@ -193,7 +208,7 @@ const TestRegister=()=>{
 function LoginClick() {
     var username = document.getElementById('username').value
     var password = document.getElementById('password').value
-    document.cookie = "username=" + username;
+    document.cookie = "username=" + username+";";
     Username = username
     CreateLoginWS(username,password)
     console.log(username)

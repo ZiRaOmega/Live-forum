@@ -146,6 +146,9 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 	if IsGoodCredentials(db, Username, Password) {
 		// login
 		Answer.Answer = "success"
+		if isUserLog(Username) {
+			RemoveUserFromUuid(Username)
+		}
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		UuidInsert(db, Answer.UUID, Username, "true", "1")
 		fmt.Println(uuidUser)
@@ -156,7 +159,21 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 		ws.WriteJSON(Answer)
 	}
 }
-
+func RemoveUserFromUuid(username string) {
+	for key, value := range uuidUser {
+		if value == username {
+			delete(uuidUser, key)
+		}
+	}
+}
+func isUserLog(username string) bool {
+	for _, value := range uuidUser {
+		if value == username {
+			return true
+		}
+	}
+	return false
+}
 func CreateUserUUIDandStoreit(Username string) string {
 	uuid := UUID.NewV4()
 	uuidUser[uuid.String()] = Username
