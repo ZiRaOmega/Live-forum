@@ -1,5 +1,5 @@
 class Message {
-    message={
+    message = {
         username: "",
         message: "",
         type: "",
@@ -32,7 +32,7 @@ class RegisterMessage {
         username: "",
         email: "",
         age: "",
-        gender:"",
+        gender: "",
         firstname: "",
         lastname: "",
         password: "",
@@ -40,11 +40,11 @@ class RegisterMessage {
     Stringify() {
         return JSON.stringify(this.message);
     }
-    constructor(username,email,age,gender,firstname,lastname, password) {
+    constructor(username, email, age, gender, firstname, lastname, password) {
         this.message.username = username;
         this.message.email = email;
         this.message.age = age;
-        this.message.gender=gender
+        this.message.gender = gender
         this.message.firstname = firstname;
         this.message.lastname = lastname;
         this.message.password = password;
@@ -69,7 +69,7 @@ class PostMessage {
         this.message.categories = categories;
     }
 }
-class PrivateMessage{
+class PrivateMessage {
     message = {
         from: "",
         to: "",
@@ -87,7 +87,7 @@ class PrivateMessage{
     }
 }
 
-class UuidMessage{
+class UuidMessage {
     message = {
         uuid: "",
         username: "",
@@ -106,6 +106,7 @@ class UuidMessage{
 }
 
 var websocket = new WebSocket("ws://localhost:8080/ws");
+UUID = ""
 websocket.onopen = function (event) {
     console.log("Connected to server");
     HelloWorld();
@@ -113,9 +114,9 @@ websocket.onopen = function (event) {
     var cookies = document.cookie.split(";")
     for (var i = 0; i < cookies.length; i++) {
         var cookie = cookies[i].split("=")
-        if (cookie[0] == "uuid") {
+        if (cookie[0] == " uuid") {
             UUID = cookie[1]
-        }else if (cookie[0] == "username") {
+        } else if (cookie[0] == " username") {
             Username = cookie[1]
         }
     }
@@ -126,37 +127,37 @@ websocket.onmessage = function (event) {
     switch (message.type) {
         case "register":
             if (message.answer == "success") {
-                expire=new Date()
-                expire.setFullYear(expire.getFullYear()+1)
+                expire = new Date()
+                expire.setFullYear(expire.getFullYear() + 1)
 
-                document.cookie = "uuid=" + message.uuid + "; expires="+expire.toUTCString();
-                UUID=message.uuid
+                document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
+                UUID = message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
-            }else{
+            } else {
                 alert("Error")
             }
             break;
         case "login":
-            if (message.answer=="success"){
-                expire=new Date()
-                expire.setFullYear(expire.getFullYear()+1)
+            if (message.answer == "success") {
+                expire = new Date()
+                expire.setFullYear(expire.getFullYear() + 1)
                 //Add message.uuid to cookies
-                document.cookie = "uuid="+message.uuid+"; expires="+expire.toUTCString();
-                UUID=message.uuid
+                document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
+                UUID = message.uuid
                 console.log(message.uuid)
                 SwitchPage("forum")
-            }else{
+            } else {
                 alert("Error")
             }
             break;
-        }
+    }
 }
 
 const login = () => {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    CreateLoginWS(username,password)
+    CreateLoginWS(username, password)
 }
 
 const register = () => {
@@ -167,7 +168,7 @@ const register = () => {
     var firstname = document.getElementById("firstname").value;
     var lastname = document.getElementById("lastname").value;
     var password = document.getElementById("password").value;
-    CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
+    CreateRegisterWS(username, email, age, gender, firstname, lastname, password)
 }
 
 const post = () => {
@@ -175,7 +176,7 @@ const post = () => {
     var title = document.getElementById("title").value;
     var content = document.getElementById("content").value;
     var categories = document.getElementById("categories").value;
-    CreatePostWS(creator,title,content,categories)
+    CreatePostWS(creator, title, content, categories)
 }
 
 const HelloWorld = () => {
@@ -184,15 +185,15 @@ const HelloWorld = () => {
     websocket.send(message.Stringify());
 }
 
-const TestLogin=()=>{
+const TestLogin = () => {
     var username = "test"
-    var password="test"
-    var logmessage = new LoginMessage(username,password)
-    var message=new Message(username,logmessage.Stringify(),"login")
-    websocket.send(message.Stringify())   
+    var password = "test"
+    var logmessage = new LoginMessage(username, password)
+    var message = new Message(username, logmessage.Stringify(), "login")
+    websocket.send(message.Stringify())
 }
 
-const TestRegister=()=>{
+const TestRegister = () => {
     var username = "test"
     var email = "test@test"
     var age = "20"
@@ -200,25 +201,25 @@ const TestRegister=()=>{
     var firstname = "Max"
     var lastname = "DIET"
     var password = "test"
-    var registerMessage = new RegisterMessage(username,email,age,gender,firstname,lastname,password)
-    var message = new Message(username,registerMessage.Stringify(),"register")
+    var registerMessage = new RegisterMessage(username, email, age, gender, firstname, lastname, password)
+    var message = new Message(username, registerMessage.Stringify(), "register")
     websocket.send(message.Stringify())
 }
 
 function LoginClick() {
     var username = document.getElementById('username').value
     var password = document.getElementById('password').value
-    document.cookie = "username=" + username+";";
+    document.cookie = "username=" + username + ";";
     Username = username
-    CreateLoginWS(username,password)
+    CreateLoginWS(username, password)
     console.log(username)
     document.getElementById('user').innerHTML = username
     return false;
 }
 
-const CreateLoginWS = (username,password)=>{
-    var logmessage = new LoginMessage(username,password)
-    var message=new Message(username,logmessage.Stringify(),"login")
+const CreateLoginWS = (username, password) => {
+    var logmessage = new LoginMessage(username, password)
+    var message = new Message(username, logmessage.Stringify(), "login")
     websocket.send(message.Stringify())
 }
 
@@ -230,26 +231,26 @@ function RegisterClick() {
     var firstname = document.getElementById('firstname').value
     var lastname = document.getElementById('lastname').value
     var password = document.getElementById('password').value
-    CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
-    Username=username
+    CreateRegisterWS(username, email, age, gender, firstname, lastname, password)
+    Username = username
     return false;
 }
 
-const CreateRegisterWS = (username,email,age,gender,firstname,lastname,password)=>{
-    var registerMessage = new RegisterMessage(username,email,age,gender,firstname,lastname,password)
-    var message = new Message(username,registerMessage.Stringify(),"register")
+const CreateRegisterWS = (username, email, age, gender, firstname, lastname, password) => {
+    var registerMessage = new RegisterMessage(username, email, age, gender, firstname, lastname, password)
+    var message = new Message(username, registerMessage.Stringify(), "register")
     websocket.send(message.Stringify())
 }
 
-const CreatePostWS = (creator,title,content,categories)=>{
-    var postMessage = new PostMessage(creator,title,content,categories)
-    var message = new Message(creator,postMessage.Stringify(),"post")
+const CreatePostWS = (creator, title, content, categories) => {
+    var postMessage = new PostMessage(creator, title, content, categories)
+    var message = new Message(creator, postMessage.Stringify(), "post")
     websocket.send(message.Stringify())
 }
 
-const CreatePrivateMessageWS = (from,to,content,date)=>{
-    var privateMessage = new PrivateMessage(from,to,content,date)
-    var message = new Message(from,privateMessage.Stringify(),"private")
+const CreatePrivateMessageWS = (from, to, content, date) => {
+    var privateMessage = new PrivateMessage(from, to, content, date)
+    var message = new Message(from, privateMessage.Stringify(), "private")
     websocket.send(message.Stringify())
 }
 
