@@ -9,7 +9,7 @@ const SwitchPage=async (page)=>{
             page="login"
         }
     }
-    await FetchPage(page);
+    FetchPage(page);
     document.getElementById('user').innerText=Username
     if(page==""){
         page="/";
@@ -18,7 +18,7 @@ const SwitchPage=async (page)=>{
     
 }
 const FetchPage=async (page)=>{
-    await fetch(`/${page}`)
+    fetch(`/${page}`)
     .then(response => response.text())
     .then(data => {
         document.body.innerHTML = data;
@@ -28,9 +28,7 @@ var UUID = ""
 var Username = ""
 //LE PROBLEME VIENT DE LA FONCTION CHECKUUID
 const checkuuid=async ()=>{
-    console.log(document.cookie)
     if (UUID==""){
-        console.log("here")
         SwitchPage("login")
     }else{
         //Post request fetch to /uuidcheck if 200, then switch to main page else switch to login page
