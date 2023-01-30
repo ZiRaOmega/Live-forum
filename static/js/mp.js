@@ -21,3 +21,14 @@ function StartMp(){
     })
 
 }
+
+function PrintMP(msg){
+    console.log(msg)
+    let messageContainer = document.getElementById("conv")
+    let m = document.createElement("div")
+    if (msg.from == Username){
+        return}
+        
+    m.innerHTML = `<b>${msg.from}</b>: ${msg.content}`
+    messageContainer.appendChild(m) 
+}

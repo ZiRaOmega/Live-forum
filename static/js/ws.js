@@ -155,7 +155,7 @@ websocket.onmessage = function (event) {
 
             msg = message.message
             console.log(msg)
-
+            PrintMP(msg)
             break
     }
 }
