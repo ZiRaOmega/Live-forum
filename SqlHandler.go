@@ -91,7 +91,7 @@ func CreatePost(db *sql.DB, Creator string, Title string, Content string, Catego
 
 func CreatePrivateMessage(db *sql.DB, From string, To string, Content string, Date string) {
 	// Insert Private Message into Database
-	stmt, err := db.Prepare("INSERT INTO private_messages(from, to, content, date) VALUES(?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO mp(from, to, content, date) VALUES(?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}

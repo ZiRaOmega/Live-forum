@@ -239,11 +239,11 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 	json.Unmarshal(message.ConvertInterface(), &Content)
 	// private message
 	fmt.Println(Content)
-	/* From := Content.From
+	From := Content.From
 	To := Content.To
 	Contentt := Content.Content
 	Date := Content.Date
-	CreatePrivateMessage(db, From, To, Contentt, Date) */
+	CreatePrivateMessage(db, From, To, Contentt, Date)
 
 	newMessage := Message{Message_Type: "private", Message: Content}
 	broadcastMessage(newMessage)
