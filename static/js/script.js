@@ -30,7 +30,7 @@ const FetchPage=async (page)=>{
     });
 }
 var UUID = ""
-var Username = ""
+var Username = "Guest"
 //LE PROBLEME VIENT DE LA FONCTION CHECKUUID
 const checkuuid=async ()=>{
     if (UUID==""){
