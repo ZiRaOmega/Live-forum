@@ -253,4 +253,3 @@ const CreatePrivateMessageWS = (from, to, content, date) => {
     var message = new Message(from, privateMessage.Stringify(), "private")
     websocket.send(message.Stringify())
 }
-
