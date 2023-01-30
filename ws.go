@@ -234,9 +234,9 @@ func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 }
 
 // private message using websocket
-func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
+func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 	Content := PrivateMessage{}
-	json.Unmarshal(Message.ConvertInterface(), &Content)
+	json.Unmarshal(message.ConvertInterface(), &Content)
 	// private message
 	fmt.Println(Content)
 	/* From := Content.From
@@ -244,6 +244,17 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Contentt := Content.Content
 	Date := Content.Date
 	CreatePrivateMessage(db, From, To, Contentt, Date) */
-	Answer := ServerAnswer{Answer: "success", Type: "private"}
-	ws.WriteJSON(Answer)
+
+	newMessage := Message{Message_Type: "private", Message: Content}
+	broadcastMessage(newMessage)
+}
+func broadcastMessage(msg Message) {
+	for client := range clients {
+		err := client.WriteJSON(msg)
+		if err != nil {
+			log.Printf("error: %v", err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
 }
