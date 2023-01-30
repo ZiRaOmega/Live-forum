@@ -106,8 +106,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Client Connected")
 	clients[ws] = true
-
 	go ListenforMessages(ws)
+	go MessageHandler(ws)
 }
 
 // handle messages from websocket
@@ -117,6 +117,7 @@ func MessageHandler(ws *websocket.Conn) {
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
+		fmt.Println(Message.Message)
 		// switch message type (login, register, post, private) and call function
 		switch Message.Message_Type {
 		case "login":
@@ -237,11 +238,12 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Content := PrivateMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	// private message
-	From := Content.From
+	fmt.Println(Content)
+	/* From := Content.From
 	To := Content.To
 	Contentt := Content.Content
 	Date := Content.Date
-	CreatePrivateMessage(db, From, To, Contentt, Date)
+	CreatePrivateMessage(db, From, To, Contentt, Date) */
 	Answer := ServerAnswer{Answer: "success", Type: "private"}
 	ws.WriteJSON(Answer)
 }
