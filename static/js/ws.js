@@ -151,6 +151,12 @@ websocket.onmessage = function (event) {
                 alert("Error")
             }
             break;
+        case "private":
+
+            msg = message.message
+            console.log(msg)
+
+            break
     }
 }
 
