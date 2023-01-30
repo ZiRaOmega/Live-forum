@@ -9,12 +9,17 @@ const SwitchPage=async (page)=>{
             page="login"
         }
     }
-    FetchPage(page);
+    await FetchPage(page);
     document.getElementById('user').innerText=Username
     if(page==""){
         page="/";
     }
     history.pushState({}, page, page);
+    if (page=="mp"){
+        //timeout to wait for the page to load
+        setTimeout(StartMp, 1000)
+        
+    }
     
 }
 const FetchPage=async (page)=>{
