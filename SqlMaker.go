@@ -27,7 +27,8 @@ func sqlMaker() {
 
 		sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
 		defer sqliteDatabase.Close()                                     // Defer Closing the database
-		createUserTable(sqliteDatabase)                                  // Create Database Tables
+		createUserTable(sqliteDatabase)
+		createMpTable(sqliteDatabase)                                  // Create Database Tables
 
 		// INSERT RECORDS
 		// passtest, _ := HashPassword("test")
