@@ -9,11 +9,13 @@ function StartMp(){
         let message = document.getElementById("sender")
         if (message.value != "") {
             console.log(username.innerText,':',message.value)
-            let msg = {Username: username.innerText,Message: message.value}
-            websocket.send(JSON.stringify(msg))
+            let msg = new PrivateMessage(username.innerText,"guest" ,message.value, "30/12/2020")
+            let wsmsg = new Message("guest", msg.Stringify(), "private")
+            websocket.send(wsmsg.Stringify())
+            
             message.value = ""
             let m = document.createElement("div")
-            m.innerHTML = `<b>${msg.Username}</b>: ${msg.Message}`
+            m.innerHTML = `<b>${msg.message.from}</b>: ${msg.message.content}`
             messageContainer.appendChild(m) 
         }
     })
