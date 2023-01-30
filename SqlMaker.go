@@ -289,6 +289,23 @@ func createPostTable(db *sql.DB) {
 	go Log("post table created")
 }
 
+func createMpTable(db *sql.DB) {
+    createMpTableSQL := `CREATE TABLE mp (
+        "sender" TEXT,        
+        "receiver" TEXT,
+        "message" TEXT,
+        "date" TEXT
+      );` // SQL Statement for Create Table
+
+    go Log("Create mp table...")
+    statement, err := db.Prepare(createMpTableSQL) // Prepare SQL Statement
+    if err != nil {
+        log.Fatal(err.Error())
+    }
+    statement.Exec() // Execute SQL Statements
+    go Log("mp table created")
+}
+
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
 	go Log("[\033[33m>\033[0m] Inserting comment")
 	insertCommentarySQL := `INSERT INTO comments(comment, username, date, postID) VALUES (?, ?, ?, ?)`
