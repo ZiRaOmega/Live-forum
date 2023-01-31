@@ -28,7 +28,8 @@ func sqlMaker() {
 		sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
 		defer sqliteDatabase.Close()                                     // Defer Closing the database
 		createUserTable(sqliteDatabase)
-		createMpTable(sqliteDatabase)                                  // Create Database Tables
+		createMpTable(sqliteDatabase) // Create Database Tables
+		CreateUUIDTable(sqliteDatabase)
 
 		// INSERT RECORDS
 		// passtest, _ := HashPassword("test")
@@ -291,20 +292,20 @@ func createPostTable(db *sql.DB) {
 }
 
 func createMpTable(db *sql.DB) {
-    createMpTableSQL := `CREATE TABLE mp (
+	createMpTableSQL := `CREATE TABLE mp (
         "sender" TEXT,        
         "receiver" TEXT,
-        "message" TEXT,
+        "content" TEXT,
         "date" TEXT
       );` // SQL Statement for Create Table
 
-    go Log("Create mp table...")
-    statement, err := db.Prepare(createMpTableSQL) // Prepare SQL Statement
-    if err != nil {
-        log.Fatal(err.Error())
-    }
-    statement.Exec() // Execute SQL Statements
-    go Log("mp table created")
+	go Log("Create mp table...")
+	statement, err := db.Prepare(createMpTableSQL) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
+	go Log("mp table created")
 }
 
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
