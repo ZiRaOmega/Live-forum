@@ -30,6 +30,7 @@ func sqlMaker() {
 		createUserTable(sqliteDatabase)
 		createMpTable(sqliteDatabase) // Create Database Tables
 		CreateUUIDTable(sqliteDatabase)
+		createConversationsTable(sqliteDatabase)
 
 		// INSERT RECORDS
 		// passtest, _ := HashPassword("test")
@@ -306,6 +307,22 @@ func createMpTable(db *sql.DB) {
 	}
 	statement.Exec() // Execute SQL Statements
 	go Log("mp table created")
+}
+
+func createConversationsTable(db *sql.DB) {
+	createConversationsTableSQL := `CREATE TABLE conversations (
+        "sender" TEXT,        
+        "receiver" TEXT,
+        "lastMessage" TEXT
+      );` // SQL Statement for Create Table
+
+	go Log("Create conversations table...")
+	statement, err := db.Prepare(createConversationsTableSQL) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
+	go Log("conversations table created")
 }
 
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
