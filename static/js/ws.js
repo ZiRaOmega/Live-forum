@@ -104,7 +104,7 @@ class UuidMessage {
         this.message.expires = expires;
     }
 }
-
+var OnlineUser=[]
 var websocket = new WebSocket("ws://localhost:8080/ws");
 UUID = ""
 websocket.onopen = function (event) {
@@ -134,6 +134,8 @@ websocket.onmessage = function (event) {
                 document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
                 UUID = message.uuid
                 console.log(message.uuid)
+                var mess = new Message("Server", "Server", "online")
+                websocket.send(mess.Stringify())
                 SwitchPage("forum")
             } else {
                 alert("Error")
@@ -148,6 +150,8 @@ websocket.onmessage = function (event) {
                 document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
                 UUID = message.uuid
                 console.log(message.uuid)
+                var mess = new Message("Server", "Server", "online")
+                websocket.send(mess.Stringify())
                 SwitchPage("forum")
             } else {
                 alert("Error")
@@ -160,12 +164,10 @@ websocket.onmessage = function (event) {
             PrintMP(msg)
             break
         case "online":
-            var OnlineUsers = document.getElementById('online_users')
-            for (let i=0;i<=message.length;i++){
-                var usr = document.createElement('div')
-                usr.innerText = message[i]
-                OnlineUsers.append(usr)
-            }
+            //var OnlineUsers = document.getElementById('online_users')
+            Users= JSON.parse(message.answer)
+            console.log(Users)
+            console.log(message)
     }
 }
 
@@ -195,7 +197,7 @@ const post = () => {
 }
 
 const HelloWorld = () => {
-    var message = new Message("Hello", "World", "hello");
+    var message = new Message("Hello", "World", "online");
     console.log(message.Stringify())
     websocket.send(message.Stringify());
 }
