@@ -12,6 +12,11 @@ type Page struct {
 	Username string
 }
 
+type PageUsers struct {
+	Username string
+	Users    []User
+}
+
 func homePage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("home")
 	t, _ = t.ParseFiles("templates/home.html")
@@ -20,7 +25,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 	// If the user is logged in, send the username to the template
 	// so that the navbar can display the username
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")
@@ -34,14 +39,13 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	}
 	p := Page{Username: username}
 	t.ExecuteTemplate(w, "home", p)
-
 }
 
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("login")
 	t, _ = t.ParseFiles("templates/login.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")
@@ -62,7 +66,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("register")
 	t, _ = t.ParseFiles("templates/register.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")
@@ -82,7 +86,7 @@ func mpPage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("mp")
 	t, _ = t.ParseFiles("templates/mp.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")
@@ -94,7 +98,9 @@ func mpPage(w http.ResponseWriter, r *http.Request) {
 	if username == "" {
 		username = "Guest"
 	}
-	p := Page{Username: username}
+	db := GetDB()
+	users := GetAllUsers(db)
+	p := PageUsers{Username: username, Users: users}
 	t.ExecuteTemplate(w, "mp", p)
 }
 
@@ -102,7 +108,7 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("forum")
 	t, _ = t.ParseFiles("templates/forum.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")
@@ -122,7 +128,7 @@ func accountPage(w http.ResponseWriter, r *http.Request) {
 	t := template.New("account")
 	t, _ = t.ParseFiles("templates/account.html")
 	t, _ = t.ParseGlob("./templates/static/*.html")
-	//if uuid cookie exists
+	// if uuid cookie exists
 	username := ""
 	if _, err := r.Cookie("uuid"); err == nil {
 		UUID, err := r.Cookie("uuid")

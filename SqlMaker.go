@@ -13,9 +13,9 @@ import (
 )
 
 type Profile struct {
-	Username        string
-	Email           string
-	Password        string
+	Username string
+	Email    string
+	Password string
 }
 
 func sqlMaker() {
@@ -675,17 +675,14 @@ func IsOnline(Username string) bool {
 }
 
 func GetAllUsers(db *sql.DB) (AllUSers []User) {
-	row, err := db.Query("SELECT * FROM user ORDER BY name")
+	row, err := db.Query("SELECT name FROM user ORDER BY name")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer row.Close()
 	for row.Next() { // Iterate and fetch the records from result cursor
-		var id int
 		var name string
-		var mail string
-		var password string
-		row.Scan(&id, &name, &mail, &password)
+		row.Scan(&name)
 		AllUSers = append(AllUSers, User{Username: name})
 	}
 	return AllUSers
@@ -724,7 +721,7 @@ func GetOnlineUsers(db *sql.DB) []User {
 		var mail string
 		var password string
 		row.Scan(&id, &name, &mail, &password)
-		result = append(result, User{Username: name, IsOnline: IsOnline(name)})
+		result = append(result, User{Username: name})
 	}
 	return result
 }
