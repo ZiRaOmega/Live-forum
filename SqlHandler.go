@@ -146,3 +146,30 @@ func CreateUUIDTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 }
+
+type conv struct {
+	sender      string
+	receiver    string
+	lastmessage string
+}
+
+func ReadConversation(db *sql.DB, username string) []conv {
+	// Get all messages from Database
+	rows, err := db.Query("SELECT * FROM mp WHERE sender or receiver = ?", username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	convs := make([]conv, 0)
+	for rows.Next() {
+		var lastmessage string
+		var sender string
+		var receiver string
+		err = rows.Scan(&sender, &receiver, &lastmessage)
+		if err != nil {
+			log.Fatal(err)
+		}
+		convs = append(convs, conv{sender: sender, receiver: receiver, lastmessage: lastmessage})
+	}
+	return convs
+}

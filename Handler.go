@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 type Page struct {
@@ -156,16 +157,9 @@ func uuidCheck(w http.ResponseWriter, r *http.Request) {
 		}
 		defer db.Close()
 		defer r.Body.Close()
-		// Check if the UUID is in the database
-		/* if UUIDandUsernameMatch(db, u.UUID) {
-			// If it is, send 200
-			w.WriteHeader(http.StatusOK)
-		} else {
-			// If it isn't, send 404
-			w.WriteHeader(http.StatusNotFound)
-		} */
+
 		fmt.Println("UUID: "+u.UUID, "Username: "+u.Username)
-		if uuidUser[u.UUID] == u.Username {
+		if uuidUser[u.UUID] == u.Username && UserCookie[u.Username].Expires.After(time.Now()) {
 			w.WriteHeader(http.StatusOK)
 		} else {
 			w.WriteHeader(http.StatusNotFound)

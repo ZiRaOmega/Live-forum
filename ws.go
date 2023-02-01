@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	// import json
 	"encoding/json"
@@ -26,6 +27,7 @@ var (
 	broadcast = make(chan Message)
 )
 var uuidUser = make(map[string]string)
+var UserCookie = make(map[string]*http.Cookie)
 
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 type Message struct {
@@ -178,7 +180,9 @@ func isUserLog(username string) bool {
 func CreateUserUUIDandStoreit(Username string) string {
 	uuid := UUID.NewV4()
 	uuidUser[uuid.String()] = Username
-
+	//expire in 5 hours
+	cookie := http.Cookie{Name: "uuid", Value: uuid.String(), Expires: time.Now().Add(5 * time.Hour)}
+	UserCookie[Username] = &cookie
 	return uuid.String()
 }
 
