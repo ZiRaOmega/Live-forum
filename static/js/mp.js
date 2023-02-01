@@ -14,8 +14,12 @@ function StartMp(){
             websocket.send(wsmsg.Stringify())
             
             message.value = ""
+            let currentDate = new Date();
+            let hour = currentDate.getHours().toString().padStart(2, '0');
+            let minute = currentDate.getMinutes().toString().padStart(2, '0');
+            let time = `${hour}:${minute}`; 
             let m = document.createElement("div")
-            m.innerHTML = `<b>${msg.message.from}</b>: ${msg.message.content}`
+            m.innerHTML = `${time} | <b>${msg.message.from}</b>: ${msg.message.content}`
             messageContainer.appendChild(m) 
         }
     })
@@ -28,7 +32,10 @@ function PrintMP(msg){
     let m = document.createElement("div")
     if (msg.from == Username){
         return}
-        
-    m.innerHTML = `<b>${msg.from}</b>: ${msg.content}`
+    let currentDate = new Date();
+    let hour = currentDate.getHours().toString().padStart(2, '0');
+    let minute = currentDate.getMinutes().toString().padStart(2, '0');
+    let time = `${hour}:${minute}`;   
+    m.innerHTML = `${time} | <b>${msg.from}</b>: ${msg.content}`
     messageContainer.appendChild(m) 
 }
