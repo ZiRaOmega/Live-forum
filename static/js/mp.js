@@ -1,12 +1,14 @@
 if (!checkuuid()){
     SwitchPage("login")
 }
+
 function StartMp(){
 
-
     console.log("here")
-    let form = document.getElementById("sender_button")
-    form.addEventListener("click", function() {
+    let form = document.getElementById("mp__send-form")
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
         let messageContainer = document.getElementById("conv")
         let username = document.getElementById("user2")
         let message = document.getElementById("sender")
