@@ -26,9 +26,11 @@ var (
 	clients   = make(map[*websocket.Conn]bool)
 	broadcast = make(chan Message)
 )
-var uuidUser = make(map[string]string)
-var UserCookie = make(map[string]*http.Cookie)
-var usernameWS = make(map[string]*websocket.Conn)
+
+var (
+	uuidUser   = make(map[string]string)
+	UserCookie = make(map[string]*http.Cookie)
+)
 
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 type Message struct {
@@ -87,10 +89,7 @@ type UuidMessage struct {
 }
 
 type User struct {
-	Username        string
-	Profile_Picture string
-	Rank            string
-	IsOnline        bool
+	Username string
 }
 
 // handle messages from websocket
@@ -140,21 +139,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPrivate(db, ws, Message)
 		case "hello":
 			fmt.Println(Message)
-		case "online":
-			WsOnline(db, ws)
 		}
 	}
-}
-func WsOnline(db *sql.DB, ws *websocket.Conn) {
-	// get all users
-	var users []string
-	for k, _ := range usernameWS {
-		users = append(users, k)
-	}
-	answer, _ := json.Marshal(users)
-	// send users to client
-	Answer := ServerAnswer{Type: "online", Answer: string(answer)}
-	ws.WriteJSON(Answer)
 }
 
 // login user using websocket
@@ -175,7 +161,6 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 		}
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		UuidInsert(db, Answer.UUID, Username, "true", "1")
-		usernameWS[Username] = ws
 		fmt.Println(uuidUser)
 		ws.WriteJSON(Answer)
 	} else {
@@ -184,6 +169,7 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 		ws.WriteJSON(Answer)
 	}
 }
+
 func RemoveUserFromUuid(username string) {
 	for key, value := range uuidUser {
 		if value == username {
@@ -191,6 +177,7 @@ func RemoveUserFromUuid(username string) {
 		}
 	}
 }
+
 func isUserLog(username string) bool {
 	for _, value := range uuidUser {
 		if value == username {
@@ -199,10 +186,11 @@ func isUserLog(username string) bool {
 	}
 	return false
 }
+
 func CreateUserUUIDandStoreit(Username string) string {
 	uuid := UUID.NewV4()
 	uuidUser[uuid.String()] = Username
-	//expire in 5 hours
+	// expire in 5 hours
 	cookie := http.Cookie{Name: "uuid", Value: uuid.String(), Expires: time.Now().Add(5 * time.Hour)}
 	UserCookie[Username] = &cookie
 	return uuid.String()
@@ -272,9 +260,9 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 	CreatePrivateMessage(db, From, To, Contentt, Date)
 
 	newMessage := Message{Message_Type: "private", Message: Content}
-	SendTo(newMessage, To)
-	//broadcastMessage(newMessage)
+	broadcastMessage(newMessage)
 }
+
 func broadcastMessage(msg Message) {
 	for client := range clients {
 		err := client.WriteJSON(msg)
@@ -283,17 +271,5 @@ func broadcastMessage(msg Message) {
 			client.Close()
 			delete(clients, client)
 		}
-	}
-}
-func SendTo(msg Message, username string) {
-	client := usernameWS[username]
-	if client == nil {
-		return
-	}
-	err := client.WriteJSON(msg)
-	if err != nil {
-		log.Printf("error: %v", err)
-		client.Close()
-		delete(clients, client)
 	}
 }
