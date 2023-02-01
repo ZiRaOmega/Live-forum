@@ -85,6 +85,13 @@ type UuidMessage struct {
 	Expires       string `json:"expires"`
 }
 
+type User struct {
+	Username        string
+	Profile_Picture string
+	Rank            string
+	IsOnline        bool
+}
+
 // handle messages from websocket
 func ListenforMessages(ws *websocket.Conn) {
 	go MessageHandler(ws)
