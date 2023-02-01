@@ -140,8 +140,21 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPrivate(db, ws, Message)
 		case "hello":
 			fmt.Println(Message)
+		case "online":
+			WsOnline(db, ws)
 		}
 	}
+}
+func WsOnline(db *sql.DB, ws *websocket.Conn) {
+	// get all users
+	var users []string
+	for k, _ := range usernameWS {
+		users = append(users, k)
+	}
+	answer, _ := json.Marshal(users)
+	// send users to client
+	Answer := ServerAnswer{Type: "online", Answer: string(answer)}
+	ws.WriteJSON(Answer)
 }
 
 // login user using websocket
@@ -275,7 +288,6 @@ func broadcastMessage(msg Message) {
 func SendTo(msg Message, username string) {
 	client := usernameWS[username]
 	if client == nil {
-		broadcastMessage(msg)
 		return
 	}
 	err := client.WriteJSON(msg)
