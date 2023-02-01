@@ -128,7 +128,8 @@ websocket.onmessage = function (event) {
         case "register":
             if (message.answer == "success") {
                 expire = new Date()
-                expire.setFullYear(expire.getFullYear() + 1)
+                //expire in 5 hours
+                expire.setHours(expire.getHours() + 5)
 
                 document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
                 UUID = message.uuid
@@ -141,7 +142,8 @@ websocket.onmessage = function (event) {
         case "login":
             if (message.answer == "success") {
                 expire = new Date()
-                expire.setFullYear(expire.getFullYear() + 1)
+                //expire in 5 hours
+                expire.setHours(expire.getHours() + 5)
                 //Add message.uuid to cookies
                 document.cookie = "uuid=" + message.uuid + "; expires=" + expire.toUTCString();
                 UUID = message.uuid
