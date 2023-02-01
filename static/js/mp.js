@@ -17,8 +17,9 @@ function StartMp(){
         }
         if (message.value != "") {
             console.log(username.innerText,':',message.value)
-            
-            
+            let messageText = message.value;
+            message.value = "";
+
             let currentDate = new Date();
             let day = currentDate.getDate().toString().padStart(2, '0');
             let month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -27,7 +28,7 @@ function StartMp(){
             let minute = currentDate.getMinutes().toString().padStart(2, '0');
             let time = `${hour}:${minute}`; 
             let timeformat = `${day}/${month}/${year} ${hour}:${minute}`;
-            let msg = new PrivateMessage(username.innerText,receiver ,message.value, timeformat)
+            let msg = new PrivateMessage(username.innerText,receiver ,messageText, timeformat)
             let wsmsg = new Message(receiver, msg.Stringify(), "private")
             let m = document.createElement("div")
             m.innerHTML = `${time} | <b>${msg.message.from}</b>: ${msg.message.content}`
