@@ -1,3 +1,6 @@
+if (!checkuuid()){
+    SwitchPage("login")
+}
 function StartMp(){
 
 

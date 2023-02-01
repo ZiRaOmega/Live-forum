@@ -28,6 +28,7 @@ var (
 )
 var uuidUser = make(map[string]string)
 var UserCookie = make(map[string]*http.Cookie)
+var usernameWS = make(map[string]*websocket.Conn)
 
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 type Message struct {
@@ -161,6 +162,7 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 		}
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		UuidInsert(db, Answer.UUID, Username, "true", "1")
+		usernameWS[Username] = ws
 		fmt.Println(uuidUser)
 		ws.WriteJSON(Answer)
 	} else {
@@ -257,7 +259,8 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 	CreatePrivateMessage(db, From, To, Contentt, Date)
 
 	newMessage := Message{Message_Type: "private", Message: Content}
-	broadcastMessage(newMessage)
+	SendTo(newMessage, To)
+	//broadcastMessage(newMessage)
 }
 func broadcastMessage(msg Message) {
 	for client := range clients {
@@ -267,5 +270,18 @@ func broadcastMessage(msg Message) {
 			client.Close()
 			delete(clients, client)
 		}
+	}
+}
+func SendTo(msg Message, username string) {
+	client := usernameWS[username]
+	if client == nil {
+		broadcastMessage(msg)
+		return
+	}
+	err := client.WriteJSON(msg)
+	if err != nil {
+		log.Printf("error: %v", err)
+		client.Close()
+		delete(clients, client)
 	}
 }

@@ -2,3 +2,6 @@
 loginsubmit.addEventListener('click', function() {
     return LoginClick();
 }); */
+if (checkuuid()){
+    SwitchPage("forum")
+}

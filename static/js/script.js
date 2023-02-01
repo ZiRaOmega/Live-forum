@@ -1,9 +1,8 @@
 const SwitchPage=async (page)=>{
-    if (page=="forum"){
+    if (page=="forum" || page=="mp" || page=="account"){
         console.log(await checkuuid())
         if (await checkuuid()){
             console.log("uuid is valid")
-            page="forum"
         }else{
             console.log("uuid is invalid")
             page="login"
