@@ -159,6 +159,13 @@ websocket.onmessage = function (event) {
             console.log(msg)
             PrintMP(msg)
             break
+        case "online":
+            var OnlineUsers = document.getElementById('online_users')
+            for (let i=0;i<=message.length;i++){
+                var usr = document.createElement('div')
+                usr.innerText = message[i]
+                OnlineUsers.append(usr)
+            }
     }
 }
 
