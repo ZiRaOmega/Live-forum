@@ -16,8 +16,6 @@ type Profile struct {
 	Username        string
 	Email           string
 	Password        string
-	Profile_picture string
-	Rank            string
 }
 
 func sqlMaker() {
@@ -687,10 +685,8 @@ func GetAllUsers(db *sql.DB) (AllUSers []User) {
 		var name string
 		var mail string
 		var password string
-		var profile_picture string
-		var rank string
-		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
-		AllUSers = append(AllUSers, User{Username: name, Profile_Picture: profile_picture, Rank: rank})
+		row.Scan(&id, &name, &mail, &password)
+		AllUSers = append(AllUSers, User{Username: name})
 	}
 	return AllUSers
 }
@@ -707,51 +703,12 @@ func GetProfileInfo(db *sql.DB, username string) Profile {
 		var name string
 		var mail string
 		var password string
-		var profile_picture string
-		var rank string
-		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
+		row.Scan(&id, &name, &mail, &password)
 		if username == name {
-			profile = Profile{Username: name, Email: mail, Password: password, Profile_picture: profile_picture, Rank: rank}
+			profile = Profile{Username: name, Email: mail, Password: password}
 		}
 	}
 	return profile
-}
-
-func Profile_PictureExist(profile_picture string) bool {
-	file, _ := os.Open("./static/img/" + profile_picture)
-	if file != nil {
-		return true
-	} else {
-		return false
-	}
-	// return false
-}
-
-func GetProfilePicture(db *sql.DB, username string) string {
-	row, err := db.Query("SELECT * FROM user ORDER BY name")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer row.Close()
-	for row.Next() { // Iterate and fetch the records from result cursor
-		var id int
-		var name string
-		var mail string
-		var password string
-		var profile_picture string
-		var rank string
-		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
-		// fmt.Println("User: ", name, " ", mail, " ", password, " ", profile_picture, " ", username)
-		if username == name {
-			// fmt.Println(Profile_PictureExist(profile_picture), profile_picture)
-			if Profile_PictureExist(profile_picture) {
-				return profile_picture
-			} else {
-				return "default.png"
-			}
-		}
-	}
-	return "default.png"
 }
 
 func GetOnlineUsers(db *sql.DB) []User {
@@ -762,17 +719,12 @@ func GetOnlineUsers(db *sql.DB) []User {
 	}
 	defer row.Close()
 	for row.Next() {
-
 		var id int
 		var name string
 		var mail string
 		var password string
-		var profile_picture string
-		var rank string
-		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
-		profilepicture := GetProfilePicture(db, name)
-		// result += name
-		result = append(result, User{Username: name, Profile_Picture: profilepicture, IsOnline: IsOnline(name)})
+		row.Scan(&id, &name, &mail, &password)
+		result = append(result, User{Username: name, IsOnline: IsOnline(name)})
 	}
 	return result
 }
