@@ -12,6 +12,14 @@ import (
 	bcrypt "golang.org/x/crypto/bcrypt" // Import bcrypt library
 )
 
+type Profile struct {
+	Username        string
+	Email           string
+	Password        string
+	Profile_picture string
+	Rank            string
+}
+
 func sqlMaker() {
 	if !fileExists("sqlite-database.db") {
 		os.Remove("sqlite-database.db") // I delete the file to avoid duplicated records.
@@ -657,4 +665,114 @@ func getLatestCommentID(db *sql.DB) int {
 		return commentID
 	}
 	return 0
+}
+
+func IsOnline(Username string) bool {
+	for k, v := range UserCookie {
+		if k == Username && v.Expires.After(time.Now()) {
+			return true
+		}
+	}
+	return false
+}
+
+func GetAllUsers(db *sql.DB) (AllUSers []User) {
+	row, err := db.Query("SELECT * FROM user ORDER BY name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() { // Iterate and fetch the records from result cursor
+		var id int
+		var name string
+		var mail string
+		var password string
+		var profile_picture string
+		var rank string
+		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
+		AllUSers = append(AllUSers, User{Username: name, Profile_Picture: profile_picture, Rank: rank})
+	}
+	return AllUSers
+}
+
+func GetProfileInfo(db *sql.DB, username string) Profile {
+	var profile Profile
+	row, err := db.Query("SELECT * FROM user ORDER BY name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() { // Iterate and fetch the records from result cursor
+		var id int
+		var name string
+		var mail string
+		var password string
+		var profile_picture string
+		var rank string
+		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
+		if username == name {
+			profile = Profile{Username: name, Email: mail, Password: password, Profile_picture: profile_picture, Rank: rank}
+		}
+	}
+	return profile
+}
+
+func Profile_PictureExist(profile_picture string) bool {
+	file, _ := os.Open("./static/img/" + profile_picture)
+	if file != nil {
+		return true
+	} else {
+		return false
+	}
+	// return false
+}
+
+func GetProfilePicture(db *sql.DB, username string) string {
+	row, err := db.Query("SELECT * FROM user ORDER BY name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() { // Iterate and fetch the records from result cursor
+		var id int
+		var name string
+		var mail string
+		var password string
+		var profile_picture string
+		var rank string
+		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
+		// fmt.Println("User: ", name, " ", mail, " ", password, " ", profile_picture, " ", username)
+		if username == name {
+			// fmt.Println(Profile_PictureExist(profile_picture), profile_picture)
+			if Profile_PictureExist(profile_picture) {
+				return profile_picture
+			} else {
+				return "default.png"
+			}
+		}
+	}
+	return "default.png"
+}
+
+func GetOnlineUsers(db *sql.DB) []User {
+	var result []User
+	row, err := db.Query("SELECT * FROM user")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() {
+
+		var id int
+		var name string
+		var mail string
+		var password string
+		var profile_picture string
+		var rank string
+		row.Scan(&id, &name, &mail, &password, &profile_picture, &rank)
+		profilepicture := GetProfilePicture(db, name)
+		// result += name
+		result = append(result, User{Username: name, Profile_Picture: profilepicture, IsOnline: IsOnline(name)})
+	}
+	return result
 }

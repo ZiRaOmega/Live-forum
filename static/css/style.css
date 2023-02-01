@@ -244,3 +244,14 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     top: 5%;
     cursor: pointer;
 }
+
+#online_users {
+    position: absolute;
+    right: 0%;
+    top:10%;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    background-color:#fafafadf;
+    cursor:default;
+}
