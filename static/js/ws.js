@@ -116,7 +116,7 @@ websocket.onopen = function (event) {
         var cookie = cookies[i].split("=")
         if (cookie[0] == " uuid") {
             UUID = cookie[1]
-        } else if (cookie[0] == " username") {
+        } else if (cookie[0] == "username") {
             Username = cookie[1]
         }
     }
