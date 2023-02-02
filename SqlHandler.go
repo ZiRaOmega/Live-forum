@@ -13,14 +13,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GetDB() *sql.DB {
-	db, err := sql.Open("sqlite3", "./sqlite-database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return db
-}
-
 func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 	// Get Password from Database
 	var passwordFromDB string
@@ -30,11 +22,7 @@ func IsGoodCredentials(db *sql.DB, username string, password string) bool {
 	}
 	// Compare Passwords
 	err = bcrypt.CompareHashAndPassword([]byte(passwordFromDB), []byte(password))
-
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func RegisterUser(db *sql.DB, username string, email string, age string, gender string, firstname string, lastname string, password string) {
@@ -127,6 +115,7 @@ func UUIDandUsernameMatch(db *sql.DB, uuid string) bool {
 	// Compare Usernames
 	//convert expire to time.Time
 	expiresInt, err := strconv.ParseInt(expires, 10, 64)
+
 	expireconverted := time.Unix(expiresInt, 0)
 	if usernameFromDB != username || expireconverted.Before(time.Now()) {
 		return false
