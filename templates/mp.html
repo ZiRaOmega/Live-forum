@@ -11,7 +11,13 @@
 <div class="recentconv">
     <div id="recent">Recent</div>
 </div>
-<div id="online_users">{{.Users}}</div>
+<div id="online_users">
+    <ul>
+    {{ range .Users }}
+        <li><a href="javascript:converseWith('{{.Username}}')">{{.Username}}</a></li>
+    {{ end }}
+    </ul>
+</div>
 <script>
         StartMp();
   </script>
