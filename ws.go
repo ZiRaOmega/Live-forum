@@ -122,7 +122,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 // handle messages from websocket
 func MessageHandler(ws *websocket.Conn) {
 	db := GetDB()
-	defer db.Close()
 	for {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)

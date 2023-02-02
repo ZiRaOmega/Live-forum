@@ -155,13 +155,13 @@ func uuidCheck(w http.ResponseWriter, r *http.Request) {
 			Username string `json:"username"`
 		}
 		var u uuid
-		db := GetDB()
+
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&u)
 		if err != nil {
 			panic(err)
 		}
-		defer db.Close()
+
 		defer r.Body.Close()
 
 		fmt.Println("UUID: "+u.UUID, "Username: "+u.Username)

@@ -1,7 +1,9 @@
 package main
 
 func main() {
-	//AHHAHA
-	sqlMaker()
+	db := GetDB()
+	sqlMaker(db)
+	defer CloseDB()
+
 	StartServerHandler()
 }
