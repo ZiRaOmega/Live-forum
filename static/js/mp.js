@@ -56,3 +56,4 @@ function PrintMP(msg){
     m.innerHTML = `${time} | <b>${msg.from}</b>: ${msg.content}`
     messageContainer.appendChild(m) 
 }
+//hihi
