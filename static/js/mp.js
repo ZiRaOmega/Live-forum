@@ -2,6 +2,22 @@ if (!checkuuid()){
     SwitchPage("login")
 }
 
+function converseWith(username) {
+    if (username != document.getElementById('receiver').value) {
+        document.getElementById('receiver').value = username
+        console.log("Targeting  : ",username)
+        const element = document.getElementById("conv");
+        const divs = element.getElementsByTagName("div");
+        while (divs.length > 0) {
+            element.removeChild(divs[0]);
+        }
+        document.getElementById('target').innerHTML = username
+    }
+    if (document.getElementById('user2').innerHTML == username) {
+        document.getElementById('target').innerHTML = username + " (You)"
+    }
+}
+
 function StartMp(){
 
     let form = document.getElementById("mp__send-form")
