@@ -1,3 +1,9 @@
+
+// Maybe keep a list of all the privates messages of the logged user (to all users)
+// First time "update" the list on websocket "hello". Add a websocket type "new-message" in ws.js or IDK
+// and add the new message to the messages list to keep it updated.
+let userMessages = [];
+
 class Message {
     message = {
         username: "",
@@ -168,6 +174,8 @@ websocket.onmessage = function (event) {
             Users= JSON.parse(message.answer)
             console.log(Users)
             console.log(message)
+        case "synchronize":
+            userMessages = message.Messages;
     }
 }
 
