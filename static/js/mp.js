@@ -4,7 +4,6 @@ if (!checkuuid()){
 
 function StartMp(){
 
-    console.log("here")
     let form = document.getElementById("mp__send-form")
     form.addEventListener("submit", function(e) {
         e.preventDefault();
@@ -13,9 +12,12 @@ function StartMp(){
         let username = document.getElementById("user2")
         let message = document.getElementById("sender")
         let receiverhtml = document.getElementById("receiver")
+        console.log("Sending message to ",receiverhtml.value)
         let receiver=""
-        if (receiverhtml == undefined||(receiverhtml.value == "") ){
+        if (receiverhtml.value == ""){
             receiver = "guest"
+        } else {
+            receiver = receiverhtml.value
         }
         if (message.value != "") {
             console.log(username.innerText,':',message.value)
