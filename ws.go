@@ -119,6 +119,17 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	go MessageHandler(ws)
 }
 
+type userMessage struct {
+	To      string
+	From    string
+	Content string
+}
+
+type wsSynchronize struct {
+	Messages []userMessage
+	Type     string `json:"type"`
+}
+
 // handle messages from websocket
 func MessageHandler(ws *websocket.Conn) {
 	db := GetDB()
@@ -137,7 +148,7 @@ func MessageHandler(ws *websocket.Conn) {
 		case "private":
 			WsPrivate(db, ws, Message)
 		case "hello":
-			fmt.Println(Message)
+			fmt.Println("hello:", Message)
 		}
 	}
 }
@@ -162,6 +173,35 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 		UuidInsert(db, Answer.UUID, Username, "true", "1")
 		fmt.Println(uuidUser)
 		ws.WriteJSON(Answer)
+
+		// Recup les mess de l'utiliseur conn.té puis les renvoyer
+		syn := wsSynchronize{
+			Type: "synchronize",
+		}
+
+		row, err := db.Query(
+			"SELECT sender, receiver, content, date FROM mp WHERE sender = ? OR receiver = ?",
+			Message.Username, Message.Username,
+		)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer row.Close()
+
+		messages := []userMessage{}
+		for row.Next() {
+			var sender, receiver, content, date string
+			row.Scan(&sender, &receiver, &content, &date)
+			messages = append(messages, userMessage{
+				To:      receiver,
+				From:    sender,
+				Content: content,
+			})
+		}
+
+		syn.Messages = messages
+		ws.WriteJSON(syn)
 	} else {
 		// error
 		Answer.Answer = "error"

@@ -56,8 +56,3 @@ function PrintMP(msg){
     m.innerHTML = `${time} | <b>${msg.from}</b>: ${msg.content}`
     messageContainer.appendChild(m) 
 }
-
-// Maybe keep a list of all the privates messages of the logged user (to all users)
-// First time "update" the list on websocket "hello". Add a websocket type "new-message" in ws.js or IDK
-// and add the new message to the messages list to keep it updated.
-let messages = [];
