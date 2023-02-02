@@ -3,6 +3,9 @@
 <div id="user2" style="position: absolute;right: 2%;font-weight: bold;top: 5%;cursor: pointer;">{{.Username}}</div>
 <div class="conv" id="conv">
     <button class="load_message">Charger plus de messages</button>
+    {{ range .Conversation }}
+    <div>{{.Date}} | <b>{{.Sender}}</b>: {{.Content}}</div>
+    {{end}}
     <h1 id="target"></h1>
     <form id="mp__send-form">
         <input id="receiver" type="text" placeholder="Receiver" hidden>
