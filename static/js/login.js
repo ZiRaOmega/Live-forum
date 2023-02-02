@@ -2,6 +2,9 @@
 loginsubmit.addEventListener('click', function() {
     return LoginClick();
 }); */
-if (checkuuid()){
-    SwitchPage("forum")
-}
+
+(async function() {
+    if (await checkuuid()) {
+        SwitchPage("forum")
+    }    
+})();

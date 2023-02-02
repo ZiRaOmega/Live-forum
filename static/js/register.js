@@ -2,6 +2,9 @@
 registersubmit.addEventListener('click', function() {
     return RegisterClick();
 }); */
-if (checkuuid()){
-    SwitchPage("forum")
-}
+
+(async function() {
+    if (await checkuuid()) {
+        SwitchPage("forum")
+    }    
+})();
