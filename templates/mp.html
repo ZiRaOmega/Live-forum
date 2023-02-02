@@ -21,7 +21,6 @@
     </ul>
 </div>
 <script>
-        StartMp();
     function converseWith(username) {
         if (username != document.getElementById('receiver').value) {
             document.getElementById('receiver').value = username
@@ -37,6 +36,7 @@
             document.getElementById('target').innerHTML = username + " (You)"
         }
     }
+    StartMp();
   </script>
   
 {{template "footer"}}
