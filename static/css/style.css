@@ -255,3 +255,22 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     background-color:#fafafadf;
     cursor:default;
 }
+
+.load_message {
+    background: rgb(34,193,195);
+    background: linear-gradient(28deg, rgba(34,193,195,1) 0%, rgba(45,137,253,1) 100%);
+    border-radius: 8px;
+    height: 35px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+}
+
+#target {
+    position: absolute;
+    top: 0%;
+    right: 1%;
+}

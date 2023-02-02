@@ -2,6 +2,8 @@
 {{template "header"}}
 <div id="user2" style="position: absolute;right: 2%;font-weight: bold;top: 5%;cursor: pointer;">{{.Username}}</div>
 <div class="conv" id="conv">
+    <button class="load_message">Charger plus de messages</button>
+    <h1 id="target"></h1>
     <form id="mp__send-form">
         <input id="receiver" type="text" placeholder="Receiver" hidden>
         <input id="sender" type="text" placeholder="Send">
@@ -21,8 +23,16 @@
 <script>
         StartMp();
     function converseWith(username) {
-        document.getElementById('receiver').value = username
-        console.log("Targeting  : ",username)
+        if (username != document.getElementById('receiver').value) {
+            document.getElementById('receiver').value = username
+            console.log("Targeting  : ",username)
+            const element = document.getElementById("conv");
+            const divs = element.getElementsByTagName("div");
+            while (divs.length > 0) {
+                element.removeChild(divs[0]);
+            }
+            document.getElementById('target').innerHTML = username
+        }
     }
   </script>
   
