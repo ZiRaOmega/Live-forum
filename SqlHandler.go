@@ -113,7 +113,7 @@ func UUIDandUsernameMatch(db *sql.DB, uuid string) bool {
 	}
 	username := uuidUser[uuid]
 	// Compare Usernames
-	// convert expire to time.Time
+	//convert expire to time.Time
 	expiresInt, err := strconv.ParseInt(expires, 10, 64)
 
 	expireconverted := time.Unix(expiresInt, 0)
@@ -137,10 +137,9 @@ func CreateUUIDTable(db *sql.DB) {
 }
 
 type conv struct {
-	Sender   string
-	Receiver string
-	Content  string
-	Date     string
+	sender      string
+	receiver    string
+	lastmessage string
 }
 
 func ReadConversation(db *sql.DB, username string) []conv {
@@ -152,15 +151,14 @@ func ReadConversation(db *sql.DB, username string) []conv {
 	defer rows.Close()
 	convs := make([]conv, 0)
 	for rows.Next() {
-		var content string
-		var date string
+		var lastmessage string
 		var sender string
 		var receiver string
-		err = rows.Scan(&sender, &receiver, &content, &date)
+		err = rows.Scan(&sender, &receiver, &lastmessage)
 		if err != nil {
 			log.Fatal(err)
 		}
-		convs = append(convs, conv{Sender: sender, Receiver: receiver, Content: content, Date: date})
+		convs = append(convs, conv{sender: sender, receiver: receiver, lastmessage: lastmessage})
 	}
 	return convs
 }

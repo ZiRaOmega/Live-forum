@@ -13,9 +13,8 @@ type Page struct {
 }
 
 type PageUsers struct {
-	Username     string
-	Users        []User
-	Conversation []conv
+	Username string
+	Users    []User
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -100,9 +99,8 @@ func mpPage(w http.ResponseWriter, r *http.Request) {
 		username = "Guest"
 	}
 	db := GetDB()
-	conversation := ReadConversation(db, username)
 	users := GetAllUsers(db)
-	p := PageUsers{Username: username, Users: users, Conversation: conversation}
+	p := PageUsers{Username: username, Users: users}
 	t.ExecuteTemplate(w, "mp", p)
 }
 
