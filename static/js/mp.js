@@ -11,13 +11,26 @@ function converseWith(username) {
         while (divs.length > 0) {
             element.removeChild(divs[0]);
         }
+        var messages = GetMessageFrom(document.getElementById('user2').innerHTML, username)
+        for (var i = 0; i < messages.length; i++) {
+            console.log(messages[i])
+            PrintMP(messages[i])
+        }
         document.getElementById('target').innerHTML = username
     }
     if (document.getElementById('user2').innerHTML == username) {
         document.getElementById('target').innerHTML = username + " (You)"
     }
 }
-
+function GetMessageFrom(From, To) {
+    var messages = []
+    for (var i = 0; i < userMessages.length; i++) {
+        if (userMessages[i].From == From && userMessages[i].To == To) {
+            messages.push(userMessages[i])
+        }
+    }
+    return messages
+}
 function StartMp(){
 
     let form = document.getElementById("mp__send-form")
@@ -69,7 +82,7 @@ function PrintMP(msg){
     let hour = currentDate.getHours().toString().padStart(2, '0');
     let minute = currentDate.getMinutes().toString().padStart(2, '0');
     let time = `${hour}:${minute}`;   
-    m.innerHTML = `${time} | <b>${msg.from}</b>: ${msg.content}`
+    m.innerHTML = `${time} | <b>${msg.From}</b>: ${msg.Content}`
     messageContainer.appendChild(m) 
 }
 //hihi
