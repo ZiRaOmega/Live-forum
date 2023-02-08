@@ -31,5 +31,5 @@ export default `<div class="popup">
 <br>
 <input id="password" type="password" name="password" placeholder="******">
 <br>
-<input id="registersubmit" type="submit" class="pointer" value="Register" {% comment %} onclick="return RegisterClick()" {% endcomment %}>
+<input id="registersubmit" type="submit" class="pointer" value="Register" onclick="return RegisterClick()">
 </div>`;
