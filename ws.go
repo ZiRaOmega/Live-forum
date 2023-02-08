@@ -147,10 +147,35 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPost(db, ws, Message)
 		case "private":
 			WsPrivate(db, ws, Message)
+		case "synchronize":
+			WsSynchronize(db, ws, Message)
 		case "hello":
 			fmt.Println("hello:", Message)
 		}
 	}
+}
+func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
+	Username := Message.Username
+	// get all messages from user
+	rows, err := db.Query("SELECT * FROM messages WHERE to = ? OR from = ?", Username, Username)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	var messages []userMessage
+	for rows.Next() {
+		var to string
+		var from string
+		var content string
+		err := rows.Scan(&to, &from, &content)
+		if err != nil {
+			fmt.Println(err)
+		}
+		messages = append(messages, userMessage{To: to, From: from, Content: content})
+	}
+	// send messages to client
+	fmt.Println(messages)
+	ws.WriteJSON(wsSynchronize{Messages: messages, Type: "synchronize"})
 }
 
 // login user using websocket
@@ -198,7 +223,7 @@ func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
 				Content: content,
 			})
 		}
-
+		fmt.Println(messages)
 		syn.Messages = messages
 		ws.WriteJSON(syn)
 	} else {
@@ -266,6 +291,7 @@ func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
 		Answer.Answer = "success"
 		Answer.UUID = CreateUserUUIDandStoreit(Username)
 		ws.WriteJSON(Answer)
+		WsSynchronize(db, ws, Message)
 		fmt.Println("success")
 	}
 }

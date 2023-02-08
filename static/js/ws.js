@@ -104,7 +104,7 @@ class UuidMessage{
         this.message.expires = expires;
     }
 }
-
+var Userconversations = []
 var websocket = new WebSocket("ws://localhost:8080/ws");
 websocket.onopen = function (event) {
     console.log("Connected to server");
@@ -128,6 +128,10 @@ websocket.onmessage = function (event) {
                 UUID=message.uuid
                 console.log(message.uuid)
             }
+            break;
+        case "synchronize":
+            console.log(message.Messages)
+            Userconversations = message.Messages
             break;
         }
 }
@@ -212,6 +216,7 @@ function RegisterClick() {
     var password = document.getElementById('password').value
     CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
     Username=username
+    router.navigate(event, '/forum')
     return false;
 }
 
