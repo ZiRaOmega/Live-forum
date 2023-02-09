@@ -154,6 +154,7 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+
 func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Username := Message.Username
 	// get all messages from user
@@ -180,6 +181,8 @@ func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
 
 // login user using websocket
 func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
+	users := GetAllUsers(db)
+	fmt.Println(users)
 	Content := LoginMessage{}
 	// convert interface to LoginMessage
 	json.Unmarshal(Message.ConvertInterface(), &Content)
@@ -268,6 +271,8 @@ func (m *Message) ConvertInterface() []byte {
 
 // register user using websocket
 func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
+	users := GetAllUsers(db)
+	fmt.Println(users)
 	Content := RegisterMessage{}
 	json.Unmarshal(Message.ConvertInterface(), &Content)
 	// register user

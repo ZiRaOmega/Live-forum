@@ -1,3 +1,4 @@
+{{define "index"}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,8 +16,14 @@
     <div id="app">
     </div>
 
+    <div id="online_users">
+        <ul>
+        {{ range .Users }}
+            <li><a href="javascript:converseWith('{{.Username}}')">{{.Username}}</a></li>
+        {{ end }}
+        </ul>
+    </div>
     {{template "footer"}}
-
     <script type="module">
         import {default as Index} from "/static/js/views/index.mjs";
         import {default as Login} from "/static/js/views/login.mjs";
@@ -45,3 +52,4 @@
 
 </body>
 </html>
+{{end}}
