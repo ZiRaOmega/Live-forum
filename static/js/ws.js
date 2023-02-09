@@ -136,7 +136,8 @@ websocket.onmessage = function (event) {
         }
 }
 
-const _login = () => {
+/*
+const login = () => {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     CreateLoginWS(username,password)
@@ -152,6 +153,7 @@ const register = () => {
     var password = document.getElementById("password").value;
     CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
 }
+*/
 
 const post = () => {
     var creator = document.getElementById("creator").value;
