@@ -7,12 +7,17 @@ import (
 )
 
 func SendIndex(w http.ResponseWriter, r *http.Request) {
-	templates, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
+	tmpl, err := template.ParseFiles("templates/header.html", "templates/footer.html", "templates/index.html")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		panic(err)
 	}
-	templates.Execute(w, nil)
+
+	err = tmpl.ExecuteTemplate(w, "index", map[string]interface{}{
+		"Users": GetAllUsers(GetDB()),
+	})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
