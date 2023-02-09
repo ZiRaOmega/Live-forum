@@ -109,14 +109,24 @@ func ListenforMessages(ws *websocket.Conn) {
 
 // handle websocket connection
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
+	var cookie, err = r.Cookie(COOKIE_SESSION_NAME)
+	if err == nil && cookie != nil {
+		var sessionId = cookie.Value
+		row := GetDB().QueryRow("SELECT user_id FROM session WHERE session_id = ?", sessionId)
+
+		var sqUserId int
+		if row.Scan(&sqUserId) != sql.ErrNoRows {
+			ws, err := upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				log.Println(err)
+			}
+			fmt.Println("Client Connected")
+			clients[ws] = true
+			go ListenforMessages(ws)
+			go MessageHandler(ws)
+		}
 	}
-	fmt.Println("Client Connected")
-	clients[ws] = true
-	go ListenforMessages(ws)
-	go MessageHandler(ws)
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 type userMessage struct {

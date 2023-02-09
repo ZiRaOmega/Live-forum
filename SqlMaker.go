@@ -48,6 +48,7 @@ func sqlMaker(db *sql.DB) {
 	createUserTable(db)
 	CreateUUIDTable(db)
 	createConversationsTable(db)
+	createSessionTable(db)
 
 	// INSERT RECORDS
 	// passtest, _ := HashPassword("test")
@@ -76,6 +77,19 @@ func createUserTable(db *sql.DB) {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
+}
+
+func createSessionTable(db *sql.DB) {
+	query := `CREATE TABLE IF NOT EXISTS session (
+		"session_id" TEXT NOT NULL PRIMARY KEY,
+		"user_id" INTEGER
+	  );`
+
+	statement, err := db.Prepare(query) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec()
 }
 
 func createNotifsTable(db *sql.DB) {

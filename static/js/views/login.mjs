@@ -1,4 +1,5 @@
 export default `<div class="popup">
+<form onsubmit="login(event)">
 <label for="username">Username</label>
 <br>
 <input id="username" type="text" name="username" placeholder="Username">
@@ -7,5 +8,6 @@ export default `<div class="popup">
 <br>
 <input id="password" type="password" name="password" placeholder="******">
 <br>
-<input id="loginsubmit" type="submit" class="pointer" onclick="return LoginClick()" value="Login">
+<input id="loginsubmit" type="submit" class="pointer" value="Login">
+</form>
 </div>`;

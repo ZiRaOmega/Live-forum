@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
+
+const COOKIE_SESSION_NAME = "SESSION_ID"
+const COOKIE_SESSION_DURATION = time.Hour * 3
 
 func SendIndex(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/header.html", "templates/footer.html", "templates/index.html")
@@ -12,9 +18,7 @@ func SendIndex(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	err = tmpl.ExecuteTemplate(w, "index", map[string]interface{}{
-		"Users": GetAllUsers(GetDB()),
-	})
+	err = tmpl.ExecuteTemplate(w, "index", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -38,8 +42,40 @@ func main() {
 			SendIndex(w, r)
 		})
 	}
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	fmt.Println("http://localhost:8080/")
+	http.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+
+		if username != "" && password != "" {
+			row := GetDB().QueryRow("SELECT idUser, password FROM user WHERE name = ?", username)
+			if row != nil {
+				var sqUserId int
+				var sqHashedPassword string
+				if row.Scan(&sqUserId, &sqHashedPassword) == nil {
+					if CheckPasswordHash(password, sqHashedPassword) {
+						sessionId := uuid.NewV4().String()
+						GetDB().Exec("INSERT INTO session (session_id, user_id) VALUES (?, ?)", sessionId, sqUserId)
+
+						http.SetCookie(w, &http.Cookie{
+							Name:     COOKIE_SESSION_NAME,
+							Value:    sessionId,
+							Expires:  time.Now().Add(COOKIE_SESSION_DURATION),
+							HttpOnly: true,
+							Path:     "/",
+						})
+
+						w.WriteHeader(http.StatusOK)
+						return
+					}
+				}
+			}
+		}
+		w.WriteHeader(http.StatusForbidden)
+	})
+
+	fmt.Println("http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
