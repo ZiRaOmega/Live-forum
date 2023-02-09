@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"     // Import go-sqlite3 library
-	bcrypt "golang.org/x/crypto/bcrypt" // Import bcrypt library
+	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
+	// Import bcrypt library
 )
 
 type Profile struct {
@@ -635,16 +635,6 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 func getLatestCommentID(db *sql.DB) int {

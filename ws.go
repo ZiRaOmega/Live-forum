@@ -120,6 +120,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
+
 			fmt.Println("Client Connected")
 			clients[ws] = true
 			go ListenforMessages(ws)

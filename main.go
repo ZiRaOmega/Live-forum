@@ -47,6 +47,35 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
+	http.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {
+		username := r.FormValue("username")
+		firstname := r.FormValue("firstname")
+		lastname := r.FormValue("lastname")
+		email := r.FormValue("email")
+		age := r.FormValue("age")
+		gender := r.FormValue("gender")
+		password := r.FormValue("password")
+
+		allFilled := true
+		for _, s := range []string{username, firstname, lastname, email, age, gender, password} {
+			if s == "" {
+				allFilled = false
+			}
+		}
+
+		if allFilled {
+			hashedPassword, _ := HashPassword(password)
+			GetDB().Exec(
+				"INSERT INTO user (name, mail, age, gender, firstname, lastname, password) VALUES (?,?,?,?,?,?,?)",
+				username, email, age, gender, firstname, lastname, hashedPassword)
+
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		w.WriteHeader(http.StatusUnauthorized)
+	})
+
 	http.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
@@ -75,7 +104,7 @@ func main() {
 				}
 			}
 		}
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusUnauthorized)
 	})
 
 	fmt.Println("http://localhost:8080")

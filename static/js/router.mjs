@@ -28,6 +28,7 @@ export default class {
             pathname,
             window.location.origin + pathname
         );
+
         this.root.innerHTML = this.routes[pathname].view;
         this.dispatch();
     }
