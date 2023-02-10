@@ -1,17 +1,23 @@
 
 export default class {
     
-    constructor(root, routes) {
+    constructor(root, routes, error404) {
         this.root = root;
         this.routes = routes;
+        this.error404 = error404;
         
         window.addEventListener('popstate', async () => {
-            this.root.innerHTML = this.routes[window.location.pathname].view;
+            const route = this.routes[window.location.pathname] ? this.routes[window.location.pathname] : this.error404;
+            this.root.innerHTML = route.render();
+            route.postRender();
         });
     }
 
     DOMContentLoadedHandler() {
-        this.root.innerHTML = this.routes[window.location.pathname].view;
+        const route = this.routes[window.location.pathname] ? this.routes[window.location.pathname] : this.error404;
+        this.root.innerHTML = route.render();
+        route.postRender();
+
         this.dispatch();
     }
 
@@ -29,7 +35,10 @@ export default class {
             window.location.origin + pathname
         );
 
-        this.root.innerHTML = this.routes[pathname].view;
+        const route = this.routes[window.location.pathname] ? this.routes[window.location.pathname] : this.error404;
+        this.root.innerHTML = route.render();
+        route.postRender();
+
         this.dispatch();
     }
 };

@@ -28,10 +28,6 @@ func SendIndex(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			http.NotFound(w, r)
-			return
-		}
 		SendIndex(w, r)
 	})
 	http.HandleFunc("/ws", wsHandler)
@@ -39,11 +35,6 @@ func main() {
 	db := GetDB()
 	sqlMaker(db)
 	defer CloseDB()
-	for _, pattern := range []string{"/login", "/register", "/pm", "/forum", "/account"} {
-		http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-			SendIndex(w, r)
-		})
-	}
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 

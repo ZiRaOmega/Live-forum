@@ -33,19 +33,21 @@
         import {default as PM} from "/static/js/views/pm.mjs";
         import {default as Account} from "/static/js/views/account.mjs";
 
+        import {default as Error404} from "/static/js/views/404.mjs";
+
         import {default as Router} from "/static/js/router.mjs";
 
         const routes = {
-            "/": { view: Index },
-            "/login": { view: Login },
-            "/register": { view: Register },
-            "/forum": { view: Index },
-            "/pm": { view: PM },
-            "/account": { view: Account },
+            "/": Index,
+            "/login": Login,
+            "/register": Register,
+            "/forum": Index,
+            "/pm": PM,
+            "/account": Account,
         };
 
         const root = document.querySelector('#app');
-        const router = new Router(root, routes);
+        const router = new Router(root, routes, Error404);
         window.router = router;
 
         window.addEventListener('DOMContentLoaded', router.DOMContentLoadedHandler.bind(router));

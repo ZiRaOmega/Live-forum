@@ -1,4 +1,9 @@
-export default `<div class="profile">
-<img class="pp">
-<div></div>
-</div>`;
+export default {
+    render: () => {
+        return `<div class="profile">
+        <img class="pp">
+        <div></div>
+        </div>`;
+    },
+    postRender: () => { },
+}
