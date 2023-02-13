@@ -1,5 +1,5 @@
 class Message {
-    message={
+    message = {
         username: "",
         message: "",
         type: "",
@@ -32,7 +32,7 @@ class RegisterMessage {
         username: "",
         email: "",
         age: "",
-        gender:"",
+        gender: "",
         firstname: "",
         lastname: "",
         password: "",
@@ -40,11 +40,11 @@ class RegisterMessage {
     Stringify() {
         return JSON.stringify(this.message);
     }
-    constructor(username,email,age,gender,firstname,lastname, password) {
+    constructor(username, email, age, gender, firstname, lastname, password) {
         this.message.username = username;
         this.message.email = email;
         this.message.age = age;
-        this.message.gender=gender
+        this.message.gender = gender
         this.message.firstname = firstname;
         this.message.lastname = lastname;
         this.message.password = password;
@@ -69,7 +69,7 @@ class PostMessage {
         this.message.categories = categories;
     }
 }
-class PrivateMessage{
+class PrivateMessage {
     message = {
         from: "",
         to: "",
@@ -87,7 +87,7 @@ class PrivateMessage{
     }
 }
 
-class UuidMessage{
+class UuidMessage {
     message = {
         uuid: "",
         username: "",
@@ -104,37 +104,49 @@ class UuidMessage{
         this.message.expires = expires;
     }
 }
+
 var Userconversations = []
-var websocket = new WebSocket("ws://localhost:8080/ws");
-websocket.onopen = function (event) {
-    console.log("Connected to server");
-    HelloWorld();
-}
-websocket.onmessage = function (event) {
-    console.log(event.data);
-    var message = JSON.parse(event.data);
-    switch (message.type) {
-        case "register":
-            if (message.answer == "success") {
-                document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
-                UUID=message.uuid
-                console.log(message.uuid)
-            }
-            break;
-        case "login":
-            if (message.answer=="success"){
-                //Add message.uuid to cookies
-                document.cookie = "uuid="+message.uuid+"; expires=Thu, 18 Dec 2020 12:00:00 UTC";
-                UUID=message.uuid
-                console.log(message.uuid)
-            }
-            break;
-        case "synchronize":
-            console.log(message.Messages)
-            Userconversations = message.Messages
-            break;
+
+/**
+ * @type {Websocket}
+ */
+let websocket = null;
+
+const initWebsocket = () => {
+    websocket = new WebSocket("ws://localhost:8080/ws");
+    websocket.onopen = function (event) {
+        console.log("Connected to server");
+        HelloWorld();
+    }
+
+    websocket.onmessage = function (event) {
+        console.log(event.data);
+        var message = JSON.parse(event.data);
+        switch (message.type) {
+            case "register":
+                if (message.answer == "success") {
+                    document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                    UUID = message.uuid
+                    console.log(message.uuid)
+                }
+                break;
+            case "login":
+                if (message.answer == "success") {
+                    //Add message.uuid to cookies
+                    document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+                    UUID = message.uuid
+                    console.log(message.uuid)
+                }
+                break;
+            case "synchronize":
+                console.log(message.Messages)
+                Userconversations = message.Messages
+                break;
         }
-}
+    }
+};
+
+initWebsocket();
 
 /*
 const login = () => {
@@ -160,7 +172,7 @@ const post = () => {
     var title = document.getElementById("title").value;
     var content = document.getElementById("content").value;
     var categories = document.getElementById("categories").value;
-    CreatePostWS(creator,title,content,categories)
+    CreatePostWS(creator, title, content, categories)
 }
 
 const HelloWorld = () => {
@@ -169,15 +181,15 @@ const HelloWorld = () => {
     websocket.send(message.Stringify());
 }
 
-const TestLogin=()=>{
+const TestLogin = () => {
     var username = "test"
-    var password="test"
-    var logmessage = new LoginMessage(username,password)
-    var message=new Message(username,logmessage.Stringify(),"login")
-    websocket.send(message.Stringify())   
+    var password = "test"
+    var logmessage = new LoginMessage(username, password)
+    var message = new Message(username, logmessage.Stringify(), "login")
+    websocket.send(message.Stringify())
 }
 
-const TestRegister=()=>{
+const TestRegister = () => {
     var username = "test"
     var email = "test@test"
     var age = "20"
@@ -185,8 +197,8 @@ const TestRegister=()=>{
     var firstname = "Max"
     var lastname = "DIET"
     var password = "test"
-    var registerMessage = new RegisterMessage(username,email,age,gender,firstname,lastname,password)
-    var message = new Message(username,registerMessage.Stringify(),"register")
+    var registerMessage = new RegisterMessage(username, email, age, gender, firstname, lastname, password)
+    var message = new Message(username, registerMessage.Stringify(), "register")
     websocket.send(message.Stringify())
 }
 
@@ -195,16 +207,16 @@ function LoginClick() {
     var password = document.getElementById('password').value
     document.cookie = "username=" + username;
     Username = username
-    CreateLoginWS(username,password)
+    CreateLoginWS(username, password)
     console.log(username)
     document.getElementById('user').innerHTML = username
     router.navigate(event, '/forum')
     return false;
 }
 
-const CreateLoginWS = (username,password)=>{
-    var logmessage = new LoginMessage(username,password)
-    var message=new Message(username,logmessage.Stringify(),"login")
+const CreateLoginWS = (username, password) => {
+    var logmessage = new LoginMessage(username, password)
+    var message = new Message(username, logmessage.Stringify(), "login")
     websocket.send(message.Stringify())
 }
 
@@ -216,27 +228,27 @@ function RegisterClick() {
     var firstname = document.getElementById('firstname').value
     var lastname = document.getElementById('lastname').value
     var password = document.getElementById('password').value
-    CreateRegisterWS(username,email,age,gender,firstname,lastname,password)
-    Username=username
+    CreateRegisterWS(username, email, age, gender, firstname, lastname, password)
+    Username = username
     router.navigate(event, '/forum')
     return false;
 }
 
-const CreateRegisterWS = (username,email,age,gender,firstname,lastname,password)=>{
-    var registerMessage = new RegisterMessage(username,email,age,gender,firstname,lastname,password)
-    var message = new Message(username,registerMessage.Stringify(),"register")
+const CreateRegisterWS = (username, email, age, gender, firstname, lastname, password) => {
+    var registerMessage = new RegisterMessage(username, email, age, gender, firstname, lastname, password)
+    var message = new Message(username, registerMessage.Stringify(), "register")
     websocket.send(message.Stringify())
 }
 
-const CreatePostWS = (creator,title,content,categories)=>{
-    var postMessage = new PostMessage(creator,title,content,categories)
-    var message = new Message(creator,postMessage.Stringify(),"post")
+const CreatePostWS = (creator, title, content, categories) => {
+    var postMessage = new PostMessage(creator, title, content, categories)
+    var message = new Message(creator, postMessage.Stringify(), "post")
     websocket.send(message.Stringify())
 }
 
-const CreatePrivateMessageWS = (from,to,content,date)=>{
-    var privateMessage = new PrivateMessage(from,to,content,date)
-    var message = new Message(from,privateMessage.Stringify(),"private")
+const CreatePrivateMessageWS = (from, to, content, date) => {
+    var privateMessage = new PrivateMessage(from, to, content, date)
+    var message = new Message(from, privateMessage.Stringify(), "private")
     websocket.send(message.Stringify())
 }
 
