@@ -17,13 +17,19 @@ import (
 	UUID "github.com/satori/go.uuid"
 )
 
+type ClientWS struct {
+	SessionId string
+	UserId    int
+	Username  string
+}
+
 // Used for sending messages Message = switch (login, register, post, private) in json need to be parsed
 var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	clients   = make(map[string]*websocket.Conn)
+	clients   = make(map[*websocket.Conn]*ClientWS)
 	broadcast = make(chan Message)
 )
 
@@ -92,21 +98,6 @@ type User struct {
 	Username string
 }
 
-// handle messages from websocket
-func ListenforMessages(ws *websocket.Conn) {
-	go MessageHandler(ws)
-	for {
-		var msg Message
-		err := ws.ReadJSON(&msg)
-		if err != nil {
-			delete(clients, GetSessionsIDByWS(ws))
-			log.Println(err)
-			break
-		}
-		broadcast <- msg
-	}
-}
-
 // handle websocket connection
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	var cookie, err = r.Cookie(COOKIE_SESSION_NAME)
@@ -114,18 +105,28 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		var sessionId = cookie.Value
 		row := GetDB().QueryRow("SELECT user_id FROM session WHERE session_id = ?", sessionId)
 
+		var sqUsername string
 		var sqUserId int
 		if row.Scan(&sqUserId) != sql.ErrNoRows {
-			ws, err := upgrader.Upgrade(w, r, nil)
-			if err != nil {
-				log.Println(err)
-				delete(clients, sessionId)
-			}
+			row = GetDB().QueryRow("SELECT name FROM user WHERE idUser = ?", sqUserId)
+			if row.Scan(&sqUsername) != sql.ErrNoRows {
+				ws, err := upgrader.Upgrade(w, r, nil)
+				if err != nil {
+					log.Printf("Error upgrading client: %s\n", err)
+					delete(clients, ws)
+					return
+				}
 
-			fmt.Println("Client Connected")
-			clients[sessionId] = ws
-			go ListenforMessages(ws)
-			go MessageHandler(ws)
+				fmt.Printf("Client Connected : %s\n", sessionId)
+				clients[ws] = &ClientWS{SessionId: sessionId, UserId: sqUserId, Username: sqUsername}
+
+				fmt.Printf("CLIENT WSPTR: %p\n", ws)
+				for client, clientInfo := range clients {
+					fmt.Printf("SUBCLIENT WSPTR: %p %v\n", client, clientInfo)
+				}
+
+				go MessageHandler(ws)
+			}
 		}
 	}
 	w.WriteHeader(http.StatusUnauthorized)
@@ -145,23 +146,28 @@ type wsSynchronize struct {
 // handle messages from websocket
 func MessageHandler(ws *websocket.Conn) {
 	db := GetDB()
+
 	for {
-		Message := <-broadcast
-		fmt.Println(Message.Message_Type)
-		fmt.Println(Message.Message)
+		var msg Message
+		err := ws.ReadJSON(&msg)
+		if err != nil {
+			fmt.Printf("error listening client\n")
+			delete(clients, ws)
+			break
+		}
 
 		// switch message type (login, register, post, private) and call function
-		switch Message.Message_Type {
+		switch msg.Message_Type {
 		case "post":
-			WsPost(db, ws, Message)
+			WsPost(db, ws, msg)
 		case "private":
-			WsPrivate(db, ws, Message)
+			WsPrivate(db, ws, msg)
 		case "sync:messages":
-			WsSynchronizeMessages(db, ws, Message)
+			WsSynchronizeMessages(db, ws, msg)
 		case "sync:users":
 			WsSynchronizeUsers(db, ws)
 		case "ping":
-			fmt.Printf("Client %s has pinged.\n", GetSessionsIDByWS(ws))
+			fmt.Printf("Client %d has pinged.\n", clients[ws].UserId)
 			ws.WriteJSON(map[string]string{
 				"request": "ping",
 			})
@@ -178,31 +184,22 @@ func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 		Type        string       `json:"type"`
 	}
 	OnlineUsers := Online{Type: "sync:users"}
-	for key, _ := range clients {
 
-		Username, UserID := GetUsernameBySessionsID(db, key)
-		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{Username: Username, UserID: UserID})
-
-	}
-	for _, value := range clients {
-		value.WriteJSON(OnlineUsers)
+	for _, clientInfo := range clients {
+		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{Username: clientInfo.Username, UserID: clientInfo.UserId})
 	}
 
-}
-func GetSessionsIDByWS(ws *websocket.Conn) string {
-	for key, value := range clients {
-		if value == ws {
-			return key
-		}
+	for client, _ := range clients {
+		client.WriteJSON(OnlineUsers)
 	}
-	return ""
+
 }
 
 func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
-	session_id := GetSessionsIDByWS(ws)
-	Username, _ := GetUsernameBySessionsID(db, session_id)
+	username := clients[ws].Username
+
 	// get all messages from user
-	rows, err := db.Query("SELECT * FROM conversations WHERE receiver = ? OR sender = ?", Username, Username)
+	rows, err := db.Query("SELECT * FROM conversations WHERE receiver = ? OR sender = ?", username, username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -229,15 +226,6 @@ func RemoveUserFromUuid(username string) {
 			delete(uuidUser, key)
 		}
 	}
-}
-
-func isUserLog(username string) bool {
-	for _, value := range uuidUser {
-		if value == username {
-			return true
-		}
-	}
-	return false
 }
 
 func CreateUserUUIDandStoreit(Username string) string {
@@ -288,12 +276,12 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 }
 
 func broadcastMessage(msg Message) {
-	for id, client := range clients {
+	for client := range clients {
 		err := client.WriteJSON(msg)
 		if err != nil {
 			log.Printf("error: %v", err)
 			client.Close()
-			delete(clients, id)
+			delete(clients, client)
 		}
 	}
 }
