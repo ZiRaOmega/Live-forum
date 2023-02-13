@@ -112,32 +112,28 @@ var Userconversations = []
  */
 let websocket = null;
 
+const synchronizeMessages = () => {
+    var message = new Message("server", "request", "sync:messages");
+    websocket.send(message.Stringify());
+};
+
+const synchronizeUsers = () => {
+    var message = new Message("server", "request", "sync:users");
+    websocket.send(message.Stringify());
+};
+
 const initWebsocket = () => {
     websocket = new WebSocket("ws://localhost:8080/ws");
-    websocket.onopen = function (event) {
+    websocket.onopen = function () {
         console.log("Connected to server");
-        HelloWorld();
+        synchronizeMessages();
+        synchronizeUsers();
     }
 
     websocket.onmessage = function (event) {
         console.log(event.data);
         var message = JSON.parse(event.data);
         switch (message.type) {
-            case "register":
-                if (message.answer == "success") {
-                    document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
-                    UUID = message.uuid
-                    console.log(message.uuid)
-                }
-                break;
-            case "login":
-                if (message.answer == "success") {
-                    //Add message.uuid to cookies
-                    document.cookie = "uuid=" + message.uuid + "; expires=Thu, 18 Dec 2020 12:00:00 UTC";
-                    UUID = message.uuid
-                    console.log(message.uuid)
-                }
-                break;
             case "synchronize":
                 console.log(message.Messages)
                 Userconversations = message.Messages
