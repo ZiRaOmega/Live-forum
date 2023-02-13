@@ -10,6 +10,7 @@ const login = async(ev) => {
         body: formData,
     }).then(r => {
         if (r.status != 200) throw new Error("Wrong username or password.");
+        
         router.navigate(null, "/forum");
     }).catch(r => {
         alert(r);

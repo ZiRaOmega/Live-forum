@@ -164,3 +164,30 @@ func ReadConversation(db *sql.DB, username string) []conv {
 	}
 	return convs
 }
+func GetUsernameBySessionsID(db *sql.DB, session_id string) string {
+	rows, err := db.Query("SELECT user_id FROM session WHERE session_id = ?", session_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var user_id string
+	if rows.Next() {
+		err = rows.Scan(&user_id)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	rows, err = db.Query("SELECT name FROM user WHERE idUser = ?", user_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var username string
+	if rows.Next() {
+		err = rows.Scan(&username)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return username
+}

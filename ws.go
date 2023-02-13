@@ -23,7 +23,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	clients   = make(map[*websocket.Conn]bool)
+	clients   = make(map[string]*websocket.Conn)
 	broadcast = make(chan Message)
 )
 
@@ -100,7 +100,6 @@ func ListenforMessages(ws *websocket.Conn) {
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			log.Println(err)
-			delete(clients, ws)
 			break
 		}
 		broadcast <- msg
@@ -122,7 +121,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			fmt.Println("Client Connected")
-			clients[ws] = true
+			clients[sessionId] = ws
 			go ListenforMessages(ws)
 			go MessageHandler(ws)
 		}
@@ -165,11 +164,19 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
-
+func GetSessionsIDByWS(ws *websocket.Conn) string {
+	for key, value := range clients {
+		if value == ws {
+			return key
+		}
+	}
+	return ""
+}
 func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
-	Username := Message.Username
+	session_id := GetSessionsIDByWS(ws)
+	Username := GetUsernameBySessionsID(db, session_id)
 	// get all messages from user
-	rows, err := db.Query("SELECT * FROM messages WHERE to = ? OR from = ?", Username, Username)
+	rows, err := db.Query("SELECT * FROM conversations WHERE receiver = ? OR sender = ?", Username, Username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -344,12 +351,12 @@ func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
 }
 
 func broadcastMessage(msg Message) {
-	for client := range clients {
+	for id, client := range clients {
 		err := client.WriteJSON(msg)
 		if err != nil {
 			log.Printf("error: %v", err)
 			client.Close()
-			delete(clients, client)
+			delete(clients, id)
 		}
 	}
 }
