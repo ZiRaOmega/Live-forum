@@ -118,6 +118,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			ws, err := upgrader.Upgrade(w, r, nil)
 			if err != nil {
 				log.Println(err)
+				delete(clients, sessionId)
 			}
 
 			fmt.Println("Client Connected")
@@ -157,12 +158,31 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPost(db, ws, Message)
 		case "private":
 			WsPrivate(db, ws, Message)
-		case "synchronize":
+		case "sync:messages":
 			WsSynchronize(db, ws, Message)
+		case "sync:users":
+			WsSynchronizeUsers(db, ws)
 		case "hello":
 			fmt.Println("hello:", Message)
 		}
 	}
+}
+func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
+	type Online struct {
+		OnlineUsers []string `json:"online"`
+		Type        string   `json:"type"`
+	}
+	OnlineUsers := Online{Type: "sync:users"}
+	for key, value := range clients {
+		if value == ws {
+			Username := GetUsernameBySessionsID(db, key)
+			OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, Username)
+		}
+	}
+	for _, value := range clients {
+		value.WriteJSON(OnlineUsers)
+	}
+
 }
 func GetSessionsIDByWS(ws *websocket.Conn) string {
 	for key, value := range clients {
@@ -194,7 +214,7 @@ func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
 	}
 	// send messages to client
 	fmt.Println(messages)
-	ws.WriteJSON(wsSynchronize{Messages: messages, Type: "synchronize"})
+	ws.WriteJSON(wsSynchronize{Messages: messages, Type: "sync:messages"})
 }
 
 // login user using websocket
