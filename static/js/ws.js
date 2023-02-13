@@ -106,6 +106,7 @@ class UuidMessage {
 }
 
 var Userconversations = []
+var UsersOnline = []
 
 /**
  * @type {Websocket}
@@ -134,10 +135,14 @@ const initWebsocket = () => {
         console.log(event.data);
         var message = JSON.parse(event.data);
         switch (message.type) {
-            case "synchronize":
+            case "sync:messages":
                 console.log(message.Messages)
                 Userconversations = message.Messages
                 break;
+            case "sync:users":
+                console.log(message.Users)
+                UsersOnline = message.online
+
         }
     }
 };
