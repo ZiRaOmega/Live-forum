@@ -10,7 +10,7 @@ export default {
                 <br>
                 <input id="password" type="password" name="password" placeholder="******">
                 <br>
-                <input id="loginsubmit" type="submit" class="pointer" value="Login">
+                <input id="loginsubmit" type="submit" class="pointer" value="Login" onclick="document.getElementById('user').innerHTML = document.getElementById('username').value">
                 </form>
                 </div>`;
     },

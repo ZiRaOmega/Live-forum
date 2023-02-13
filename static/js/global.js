@@ -29,7 +29,7 @@ const register = async(ev) => {
         method: "post",
         body: formData,
     }).then(r => {
-        if (r.status != 200) throw new Error("S'thing got wrong, man....");
+        if (r.status != 200) throw new Error("Something got wrong, man....");
         router.navigate(null, "/login");
     }).catch(r => {
         alert(r);
