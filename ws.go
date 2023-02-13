@@ -148,22 +148,22 @@ func MessageHandler(ws *websocket.Conn) {
 		Message := <-broadcast
 		fmt.Println(Message.Message_Type)
 		fmt.Println(Message.Message)
+
 		// switch message type (login, register, post, private) and call function
 		switch Message.Message_Type {
-		case "login":
-			WsLogin(db, ws, Message)
-		case "register":
-			WsRegister(db, ws, Message)
 		case "post":
 			WsPost(db, ws, Message)
 		case "private":
 			WsPrivate(db, ws, Message)
 		case "sync:messages":
-			WsSynchronize(db, ws, Message)
+			WsSynchronizeMessages(db, ws, Message)
 		case "sync:users":
 			WsSynchronizeUsers(db, ws)
-		case "hello":
-			fmt.Println("hello:", Message)
+		case "ping":
+			fmt.Printf("Client %s has pinged.\n", GetSessionsIDByWS(ws))
+			ws.WriteJSON(map[string]string{
+				"request": "ping",
+			})
 		}
 	}
 }
@@ -192,7 +192,8 @@ func GetSessionsIDByWS(ws *websocket.Conn) string {
 	}
 	return ""
 }
-func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
+
+func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 	session_id := GetSessionsIDByWS(ws)
 	Username := GetUsernameBySessionsID(db, session_id)
 	// get all messages from user
@@ -215,63 +216,6 @@ func WsSynchronize(db *sql.DB, ws *websocket.Conn, Message Message) {
 	// send messages to client
 	fmt.Println(messages)
 	ws.WriteJSON(wsSynchronize{Messages: messages, Type: "sync:messages"})
-}
-
-// login user using websocket
-func WsLogin(db *sql.DB, ws *websocket.Conn, Message Message) { // Working
-	users := GetAllUsers(db)
-	fmt.Println(users)
-	Content := LoginMessage{}
-	// convert interface to LoginMessage
-	json.Unmarshal(Message.ConvertInterface(), &Content)
-	// login user
-	Username := Content.Username
-	Password := Content.Password
-	Answer := ServerAnswer{Type: "login"}
-	fmt.Println(Username, Password)
-	if IsGoodCredentials(db, Username, Password) {
-		// login
-		Answer.Answer = "success"
-		if isUserLog(Username) {
-			RemoveUserFromUuid(Username)
-		}
-		Answer.UUID = CreateUserUUIDandStoreit(Username)
-		UuidInsert(db, Answer.UUID, Username, "true", "1")
-		fmt.Println(uuidUser)
-		ws.WriteJSON(Answer)
-
-		// Recup les mess de l'utiliseur conn.té puis les renvoyer
-		syn := wsSynchronize{
-			Type: "synchronize",
-		}
-
-		row, err := db.Query(
-			"SELECT sender, receiver, content, date FROM mp WHERE sender = ? OR receiver = ?",
-			Message.Username, Message.Username,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer row.Close()
-
-		messages := []userMessage{}
-		for row.Next() {
-			var sender, receiver, content, date string
-			row.Scan(&sender, &receiver, &content, &date)
-			messages = append(messages, userMessage{
-				To:      receiver,
-				From:    sender,
-				Content: content,
-			})
-		}
-		fmt.Println(messages)
-		syn.Messages = messages
-		ws.WriteJSON(syn)
-	} else {
-		// error
-		Answer.Answer = "error"
-		ws.WriteJSON(Answer)
-	}
 }
 
 func RemoveUserFromUuid(username string) {
@@ -305,38 +249,6 @@ func (m *Message) ConvertInterface() []byte {
 	// convert Message to []byte
 	Mes := m.Message.(string)
 	return []byte(Mes)
-}
-
-// register user using websocket
-func WsRegister(db *sql.DB, ws *websocket.Conn, Message Message) {
-	users := GetAllUsers(db)
-	fmt.Println(users)
-	Content := RegisterMessage{}
-	json.Unmarshal(Message.ConvertInterface(), &Content)
-	// register user
-	Username := Content.Username
-	Email := Content.Email
-	Age := Content.Age
-	Gender := Content.Gender
-	FirstName := Content.FirstName
-	LastName := Content.LastName
-	Password := Content.Password
-	fmt.Println(Username, Email, Age, Gender, FirstName, LastName, Password)
-	Answer := ServerAnswer{Type: "register"}
-	if DidUserExist(db, Username) || DidUserExist(db, Email) {
-		// error
-		Answer.Answer = "error"
-		ws.WriteJSON(Answer)
-		fmt.Println("error")
-	} else {
-		// register
-		RegisterUser(db, Username, Email, Age, Gender, FirstName, LastName, Password)
-		Answer.Answer = "success"
-		Answer.UUID = CreateUserUUIDandStoreit(Username)
-		ws.WriteJSON(Answer)
-		WsSynchronize(db, ws, Message)
-		fmt.Println("success")
-	}
 }
 
 // post using websocket
