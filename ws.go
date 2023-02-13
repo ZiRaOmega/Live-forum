@@ -99,6 +99,7 @@ func ListenforMessages(ws *websocket.Conn) {
 		var msg Message
 		err := ws.ReadJSON(&msg)
 		if err != nil {
+			delete(clients, GetSessionsIDByWS(ws))
 			log.Println(err)
 			break
 		}
@@ -173,11 +174,11 @@ func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 		Type        string   `json:"type"`
 	}
 	OnlineUsers := Online{Type: "sync:users"}
-	for key, value := range clients {
-		if value == ws {
-			Username := GetUsernameBySessionsID(db, key)
-			OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, Username)
-		}
+	for key, _ := range clients {
+
+		Username := GetUsernameBySessionsID(db, key)
+		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, Username)
+
 	}
 	for _, value := range clients {
 		value.WriteJSON(OnlineUsers)
