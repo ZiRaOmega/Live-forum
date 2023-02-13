@@ -169,15 +169,19 @@ func MessageHandler(ws *websocket.Conn) {
 	}
 }
 func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
+	type OnlineUser struct {
+		Username string `json:"username"`
+		UserID   int    `json:"idUser"`
+	}
 	type Online struct {
-		OnlineUsers []string `json:"online"`
-		Type        string   `json:"type"`
+		OnlineUsers []OnlineUser `json:"online"`
+		Type        string       `json:"type"`
 	}
 	OnlineUsers := Online{Type: "sync:users"}
 	for key, _ := range clients {
 
-		Username := GetUsernameBySessionsID(db, key)
-		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, Username)
+		Username, UserID := GetUsernameBySessionsID(db, key)
+		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{Username: Username, UserID: UserID})
 
 	}
 	for _, value := range clients {
@@ -196,7 +200,7 @@ func GetSessionsIDByWS(ws *websocket.Conn) string {
 
 func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 	session_id := GetSessionsIDByWS(ws)
-	Username := GetUsernameBySessionsID(db, session_id)
+	Username, _ := GetUsernameBySessionsID(db, session_id)
 	// get all messages from user
 	rows, err := db.Query("SELECT * FROM conversations WHERE receiver = ? OR sender = ?", Username, Username)
 	if err != nil {
