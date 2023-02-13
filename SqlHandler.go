@@ -164,7 +164,7 @@ func ReadConversation(db *sql.DB, username string) []conv {
 	}
 	return convs
 }
-func GetUsernameBySessionsID(db *sql.DB, session_id string) string {
+func GetUsernameBySessionsID(db *sql.DB, session_id string) (string, int) {
 	rows, err := db.Query("SELECT user_id FROM session WHERE session_id = ?", session_id)
 	if err != nil {
 		log.Fatal(err)
@@ -189,5 +189,9 @@ func GetUsernameBySessionsID(db *sql.DB, session_id string) string {
 			log.Fatal(err)
 		}
 	}
-	return username
+	uid, err := strconv.Atoi(user_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return username, uid
 }
