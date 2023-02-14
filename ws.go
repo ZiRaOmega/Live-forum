@@ -120,6 +120,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				clients[ws] = &ClientWS{SessionId: sessionId, UserId: sqUserId, Username: sqUsername}
 
 				go MessageHandler(ws)
+				return
 			}
 		}
 	}
