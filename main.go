@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 
@@ -13,7 +14,7 @@ const COOKIE_SESSION_NAME = "SESSION_ID"
 const COOKIE_SESSION_DURATION = time.Hour * 3
 
 func SendIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Client with IP: %s\n", r.RemoteAddr)
+	log.Printf("[SendIndex:%s] New Client with IP: %s\n", r.URL.Path, r.RemoteAddr)
 
 	tmpl, err := template.ParseFiles("templates/header.html", "templates/footer.html", "templates/index.html")
 	if err != nil {
