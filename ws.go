@@ -29,8 +29,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	clients   = make(map[*websocket.Conn]*ClientWS)
-	broadcast = make(chan Message)
+	clients = make(map[*websocket.Conn]*ClientWS)
 )
 
 var (
@@ -117,13 +116,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				fmt.Printf("Client Connected : %s\n", sessionId)
+				log.Printf("[WebSocket] New client with session %s.\n", sessionId)
 				clients[ws] = &ClientWS{SessionId: sessionId, UserId: sqUserId, Username: sqUsername}
-
-				fmt.Printf("CLIENT WSPTR: %p\n", ws)
-				for client, clientInfo := range clients {
-					fmt.Printf("SUBCLIENT WSPTR: %p %v\n", client, clientInfo)
-				}
 
 				go MessageHandler(ws)
 			}
@@ -151,7 +145,7 @@ func MessageHandler(ws *websocket.Conn) {
 		var msg Message
 		err := ws.ReadJSON(&msg)
 		if err != nil {
-			fmt.Printf("error listening client\n")
+			log.Printf("[WebSocket] Dropped client.\n")
 			delete(clients, ws)
 			break
 		}
@@ -167,7 +161,7 @@ func MessageHandler(ws *websocket.Conn) {
 		case "sync:users":
 			WsSynchronizeUsers(db, ws)
 		case "ping":
-			fmt.Printf("Client %d has pinged.\n", clients[ws].UserId)
+			fmt.Printf("Client %d/%s (%s) has pinged.\n", clients[ws].UserId, clients[ws].Username, clients[ws].SessionId)
 			ws.WriteJSON(map[string]string{
 				"request": "ping",
 			})
@@ -189,7 +183,7 @@ func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{Username: clientInfo.Username, UserID: clientInfo.UserId})
 	}
 
-	for client, _ := range clients {
+	for client := range clients {
 		client.WriteJSON(OnlineUsers)
 	}
 
