@@ -10,6 +10,10 @@ class Message {
   }
 }
 
+let user = {
+  username: null,
+};
+
 let UserConversations = [];
 let UsersOnline = [];
 
@@ -20,6 +24,11 @@ let websocket = null;
 
 const ping = () => {
   var message = new Message("server", "request", "ping");
+  websocket.send(message.stringify());
+};
+
+const synchronizeProfile = () => {
+  var message = new Message("server", "request", "sync:profile");
   websocket.send(message.stringify());
 };
 
@@ -42,6 +51,7 @@ const initWebsocket = () => {
   websocket = new WebSocket("ws://localhost:8080/ws");
   websocket.onopen = function () {
     console.log("Connected to server");
+    synchronizeProfile();
     synchronizeMessages();
     synchronizeUsers();
   };
@@ -50,6 +60,9 @@ const initWebsocket = () => {
     console.log(event.data);
     var message = JSON.parse(event.data);
     switch (message.type) {
+      case "sync:profile":
+        user = message.profile;
+        break;
       case "sync:messages":
         console.log(message.Messages);
         UserConversations = message.Messages;
@@ -57,6 +70,7 @@ const initWebsocket = () => {
       case "sync:users":
         console.log(message.Users);
         UsersOnline = message.online;
+        break;
     }
   };
 };
