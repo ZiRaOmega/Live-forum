@@ -157,6 +157,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPost(db, ws, msg)
 		case "private":
 			WsPrivate(db, ws, msg)
+		case "sync:profile":
+			WsSynchronizeProfile(db, ws)
 		case "sync:messages":
 			WsSynchronizeMessages(db, ws, msg)
 		case "sync:users":
@@ -169,6 +171,24 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+
+func WsSynchronizeProfile(db *sql.DB, ws *websocket.Conn) {
+	type SyncProfile struct {
+		Username string `json:"username"`
+	}
+
+	type SyncProfilePacket struct {
+		Profile SyncProfile `json:"profile"`
+		Type    string      `json:"type"`
+	}
+
+	syncProfilePacket := SyncProfilePacket{Profile: SyncProfile{
+		Username: clients[ws].Username,
+	}, Type: "sync:profile"}
+
+	ws.WriteJSON(syncProfilePacket)
+}
+
 func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 	type OnlineUser struct {
 		Username string `json:"username"`

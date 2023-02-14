@@ -227,6 +227,7 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     width: 25%;
     height: 25%;
     margin: 25px;
+    display: flex;
 }
 
 #user {
