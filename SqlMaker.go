@@ -660,18 +660,25 @@ func IsOnline(Username string) bool {
 	return false
 }
 
-func GetAllUsers(db *sql.DB) (AllUSers []User) {
-	row, err := db.Query("SELECT name FROM user ORDER BY name")
+func GetAllUsers(db *sql.DB) ([]User, error) {
+	rows, err := db.Query("SELECT name FROM user ORDER BY name")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer row.Close()
-	for row.Next() { // Iterate and fetch the records from result cursor
-		var name string
-		row.Scan(&name)
-		AllUSers = append(AllUSers, User{Username: name})
+	defer rows.Close()
+	var users []User
+	for rows.Next() {
+		var username string
+		if err := rows.Scan(&username); err != nil {
+			return nil, err
+		}
+		users = append(users, User{Username: username})
 	}
-	return AllUSers
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func GetProfileInfo(db *sql.DB, username string) Profile {

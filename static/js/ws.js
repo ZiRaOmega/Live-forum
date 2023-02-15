@@ -10,8 +10,13 @@ class Message {
   }
 }
 
+let user = {
+  username: null,
+};
+
 let UserConversations = [];
 let UsersOnline = [];
+let UserList = [];
 
 /**
  * @type {Websocket}
@@ -20,6 +25,11 @@ let websocket = null;
 
 const ping = () => {
   var message = new Message("server", "request", "ping");
+  websocket.send(message.stringify());
+};
+
+const synchronizeProfile = () => {
+  var message = new Message("server", "request", "sync:profile");
   websocket.send(message.stringify());
 };
 
@@ -33,6 +43,11 @@ const synchronizeUsers = () => {
   websocket.send(message.stringify());
 };
 
+const synchronizeUserList = () => {
+  var message = new Message("server", "request", "sync:userList");
+  websocket.send(message.stringify());
+};
+
 const initWebsocket = () => {
   if (websocket && websocket.readyState == WebSocket.OPEN) {
     console.error("already connected");
@@ -42,6 +57,8 @@ const initWebsocket = () => {
   websocket = new WebSocket("ws://localhost:8080/ws");
   websocket.onopen = function () {
     console.log("Connected to server");
+    synchronizeUserList();
+    synchronizeProfile();
     synchronizeMessages();
     synchronizeUsers();
   };
@@ -50,6 +67,9 @@ const initWebsocket = () => {
     console.log(event.data);
     var message = JSON.parse(event.data);
     switch (message.type) {
+      case "sync:profile":
+        user = message.profile;
+        break;
       case "sync:messages":
         console.log(message.Messages);
         UserConversations = message.Messages;
@@ -57,8 +77,49 @@ const initWebsocket = () => {
       case "sync:users":
         console.log(message.Users);
         UsersOnline = message.online;
+        break;
+      case "sync:userList":
+        console.log(message.userList);
+        UserList = message.userList;
+        createList(UserList)
+        break;
     }
   };
 };
 
 initWebsocket();
+
+var userss = []
+
+function createList(users) {
+  users.forEach(item => {
+      userss.push(item.username)
+  });
+  document.querySelector(".recentconv").appendChild(list);
+}
+
+document.addEventListener('mousemove', ()=>{
+  var crs = document.getElementsByClassName('cr');
+  if (crs.length > 0) {
+    return
+  } else {
+    const list = document.createElement("ul");
+    userss.forEach(item => {
+      if (item != user.username) {
+        const listItem = document.createElement("li");
+        const span = document.createElement("span");
+        span.classList.add("dot");
+        listItem.innerHTML = item;
+        list.classList.add("cr");
+        for (let i = 0; i < UsersOnline.length; i++) {
+          if (UsersOnline[i].username == item) {
+            span.classList.add("online")
+          }
+        }
+        list.appendChild(span);
+        list.appendChild(listItem);
+      }
+    });
+    document.querySelector(".recentconv").appendChild(list);
+  }
+});
