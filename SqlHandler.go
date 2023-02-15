@@ -103,26 +103,6 @@ func UuidInsert(db *sql.DB, uuid string, username string, authenticated string, 
 	}
 }
 
-func UUIDandUsernameMatch(db *sql.DB, uuid string) bool {
-	// Get Username and expires from Database
-	var usernameFromDB string
-	var expires string
-	err := db.QueryRow("SELECT username, expires FROM uuids WHERE uuid = ?", uuid).Scan(&usernameFromDB, &expires)
-	if err != nil {
-		log.Fatal(err)
-	}
-	username := uuidUser[uuid]
-	// Compare Usernames
-	// convert expire to time.Time
-	expiresInt, err := strconv.ParseInt(expires, 10, 64)
-
-	expireconverted := time.Unix(expiresInt, 0)
-	if usernameFromDB != username || expireconverted.Before(time.Now()) {
-		return false
-	}
-	return true
-}
-
 func CreateUUIDTable(db *sql.DB) {
 	// Create UUID Table
 	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS uuids(uuid TEXT PRIMARY KEY, username TEXT, authenticated TEXT, expires TEXT)")
@@ -164,6 +144,7 @@ func ReadConversation(db *sql.DB, username string) []conv {
 	}
 	return convs
 }
+
 func GetUsernameBySessionsID(db *sql.DB, session_id string) (string, int) {
 	rows, err := db.Query("SELECT user_id FROM session WHERE session_id = ?", session_id)
 	if err != nil {
