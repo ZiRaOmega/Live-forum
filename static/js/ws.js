@@ -81,7 +81,7 @@ const initWebsocket = () => {
       case "sync:userList":
         console.log(message.userList);
         UserList = message.userList;
-        createList(message.userList)
+        createList(UserList)
         break;
     }
   };
@@ -89,15 +89,50 @@ const initWebsocket = () => {
 
 initWebsocket();
 
+var userss = []
+
 function createList(users) {
   const list = document.createElement("ul");
+  userss = []
   users.forEach(item => {
     if (item.username != user) {
+      userss.push(item.username)
       const listItem = document.createElement("li");
       listItem.innerHTML = item.username;
       list.appendChild(listItem);
     }
   });
-  
   document.querySelector(".recentconv").appendChild(list);
+}
+
+document.addEventListener('mousemove', ()=>{
+  var crs = document.getElementsByClassName('cr');
+  if (crs.length > 0) {
+    return
+  } else {
+    const list = document.createElement("ul");
+    userss.forEach(item => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = item;
+        list.classList.add("cr")
+        list.appendChild(listItem);
+    });
+    document.querySelector(".recentconv").appendChild(list);
+  }
+});
+
+function LiveUpdateUserList() {
+  var crs = document.getElementsByClassName('LiveUserList');
+  if (crs.length > 0) {
+    return
+  } else {
+    const list = document.createElement("ul");
+    userss.forEach(item => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = item;
+        list.classList.add("LiveUserList")
+        list.appendChild(listItem);
+    });
+    document.querySelector(".recentconv").appendChild(list);
+  }
 }
