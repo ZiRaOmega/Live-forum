@@ -97,8 +97,17 @@ function createList(users) {
   });
   document.querySelector(".recentconv").appendChild(list);
 }
-
+var refresh = false
+setInterval(() => {
+  if (refresh) {
+    refresh = false
+  } else {
+    refresh = true
+  }}, 1000);
 document.addEventListener('mousemove', ()=>{
+  if (!refresh) {
+    return
+  }
   var crs = document.getElementsByClassName('cr');
   if (crs.length > 0) {
     return
@@ -120,6 +129,7 @@ document.addEventListener('mousemove', ()=>{
         list.appendChild(listItem);
       }
     });
+    refresh=false
     document.querySelector(".recentconv").appendChild(list);
   }
 });
