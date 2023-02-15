@@ -99,9 +99,9 @@ type User struct {
 
 // handle websocket connection
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	var cookie, err = r.Cookie(COOKIE_SESSION_NAME)
+	cookie, err := r.Cookie(COOKIE_SESSION_NAME)
 	if err == nil && cookie != nil {
-		var sessionId = cookie.Value
+		sessionId := cookie.Value
 		row := GetDB().QueryRow("SELECT user_id FROM session WHERE session_id = ?", sessionId)
 
 		var sqUsername string
@@ -163,6 +163,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsSynchronizeMessages(db, ws, msg)
 		case "sync:users":
 			WsSynchronizeUsers(db, ws)
+		case "sync:userList":
+			WsSynchronizeUserList(db, ws)
 		case "ping":
 			fmt.Printf("Client %d/%s (%s) has pinged.\n", clients[ws].UserId, clients[ws].Username, clients[ws].SessionId)
 			ws.WriteJSON(map[string]string{
@@ -207,7 +209,30 @@ func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 	for client := range clients {
 		client.WriteJSON(OnlineUsers)
 	}
+}
 
+func WsSynchronizeUserList(db *sql.DB, ws *websocket.Conn) {
+	type User struct {
+		Username string `json:"username"`
+	}
+	type UserLists struct {
+		User []User `json:"userList"`
+		Type string `json:"type"`
+	}
+
+	Users, err := GetAllUsers(db)
+	if err != nil {
+		return
+	}
+	var UserList UserLists
+	UserList.Type = "sync:userList"
+	for _, user := range Users {
+		UserList.User = append(UserList.User, User{Username: user.Username})
+	}
+
+	for client := range clients {
+		client.WriteJSON(UserList)
+	}
 }
 
 func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {

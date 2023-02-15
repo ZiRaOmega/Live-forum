@@ -10,8 +10,10 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-const COOKIE_SESSION_NAME = "SESSION_ID"
-const COOKIE_SESSION_DURATION = time.Hour * 3
+const (
+	COOKIE_SESSION_NAME     = "SESSION_ID"
+	COOKIE_SESSION_DURATION = time.Hour * 3
+)
 
 func SendIndex(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[SendIndex:%s] New Client with IP: %s\n", r.URL.Path, r.RemoteAddr)
