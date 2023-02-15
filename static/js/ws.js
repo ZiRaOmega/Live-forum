@@ -16,6 +16,7 @@ let user = {
 
 let UserConversations = [];
 let UsersOnline = [];
+let UserList = [];
 
 /**
  * @type {Websocket}
@@ -42,6 +43,11 @@ const synchronizeUsers = () => {
   websocket.send(message.stringify());
 };
 
+const synchronizeUserList = () => {
+  var message = new Message("server", "request", "sync:userList");
+  websocket.send(message.stringify());
+};
+
 const initWebsocket = () => {
   if (websocket && websocket.readyState == WebSocket.OPEN) {
     console.error("already connected");
@@ -51,6 +57,7 @@ const initWebsocket = () => {
   websocket = new WebSocket("ws://localhost:8080/ws");
   websocket.onopen = function () {
     console.log("Connected to server");
+    synchronizeUserList();
     synchronizeProfile();
     synchronizeMessages();
     synchronizeUsers();
@@ -71,8 +78,26 @@ const initWebsocket = () => {
         console.log(message.Users);
         UsersOnline = message.online;
         break;
+      case "sync:userList":
+        console.log(message.userList);
+        UserList = message.userList;
+        createList(message.userList)
+        break;
     }
   };
 };
 
 initWebsocket();
+
+function createList(users) {
+  const list = document.createElement("ul");
+  users.forEach(item => {
+    if (item.username != user) {
+      const listItem = document.createElement("li");
+      listItem.innerHTML = item.username;
+      list.appendChild(listItem);
+    }
+  });
+  
+  document.querySelector(".recentconv").appendChild(list);
+}
