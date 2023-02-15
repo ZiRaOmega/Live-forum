@@ -237,3 +237,28 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     top: 5%;
     cursor: pointer;
 }
+
+.cr {
+    list-style-type: none;
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+}
+
+.cr li {
+    padding-left: 5px;
+    padding-bottom: 5px;
+    width: 90%;
+}
+
+.dot {
+    height: 20px;
+    width: 20px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: flex;
+}
+
+.online {
+    background-color: green;
+}

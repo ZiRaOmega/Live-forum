@@ -92,15 +92,8 @@ initWebsocket();
 var userss = []
 
 function createList(users) {
-  const list = document.createElement("ul");
-  userss = []
   users.forEach(item => {
-    if (item.username != user) {
       userss.push(item.username)
-      const listItem = document.createElement("li");
-      listItem.innerHTML = item.username;
-      list.appendChild(listItem);
-    }
   });
   document.querySelector(".recentconv").appendChild(list);
 }
@@ -112,27 +105,21 @@ document.addEventListener('mousemove', ()=>{
   } else {
     const list = document.createElement("ul");
     userss.forEach(item => {
+      if (item != user.username) {
         const listItem = document.createElement("li");
+        const span = document.createElement("span");
+        span.classList.add("dot");
         listItem.innerHTML = item;
-        list.classList.add("cr")
+        list.classList.add("cr");
+        for (let i = 0; i < UsersOnline.length; i++) {
+          if (UsersOnline[i].username == item) {
+            span.classList.add("online")
+          }
+        }
+        list.appendChild(span);
         list.appendChild(listItem);
+      }
     });
     document.querySelector(".recentconv").appendChild(list);
   }
 });
-
-function LiveUpdateUserList() {
-  var crs = document.getElementsByClassName('LiveUserList');
-  if (crs.length > 0) {
-    return
-  } else {
-    const list = document.createElement("ul");
-    userss.forEach(item => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = item;
-        list.classList.add("LiveUserList")
-        list.appendChild(listItem);
-    });
-    document.querySelector(".recentconv").appendChild(list);
-  }
-}
