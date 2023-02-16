@@ -47,7 +47,7 @@ func sqlMaker(db *sql.DB) {
 	createMpTable(db)
 	createUserTable(db)
 	CreateUUIDTable(db)
-	createConversationsTable(db)
+	// createConversationsTable(db)
 	createSessionTable(db)
 
 	// INSERT RECORDS
@@ -313,9 +313,10 @@ func createMpTable(db *sql.DB) {
 	statement.Exec() // Execute SQL Statements
 }
 
+/*
 func createConversationsTable(db *sql.DB) {
 	createConversationsTableSQL := `CREATE TABLE IF NOT EXISTS conversations (
-        "sender" TEXT,        
+        "sender" TEXT,
         "receiver" TEXT,
         "lastMessage" TEXT
       );` // SQL Statement for Create Table
@@ -326,6 +327,7 @@ func createConversationsTable(db *sql.DB) {
 	}
 	statement.Exec() // Execute SQL Statements
 }
+*/
 
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
 	go Log("[\033[33m>\033[0m] Inserting comment")

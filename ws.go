@@ -131,6 +131,7 @@ type userMessage struct {
 	To      string
 	From    string
 	Content string
+	Date    string
 }
 
 type wsSynchronize struct {
@@ -148,6 +149,8 @@ func MessageHandler(ws *websocket.Conn) {
 		if err != nil {
 			log.Printf("[WebSocket] Dropped client.\n")
 			delete(clients, ws)
+			WsSynchronizeUserList(db, ws)
+			WsSynchronizeUsers(db, ws)
 			break
 		}
 
@@ -239,7 +242,7 @@ func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 	username := clients[ws].Username
 
 	// get all messages from user
-	rows, err := db.Query("SELECT * FROM conversations WHERE receiver = ? OR sender = ?", username, username)
+	rows, err := db.Query("SELECT * FROM mp WHERE receiver = ? OR sender = ?", username, username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -249,11 +252,12 @@ func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 		var to string
 		var from string
 		var content string
-		err := rows.Scan(&to, &from, &content)
+		var date string
+		err := rows.Scan(&to, &from, &content, &date)
 		if err != nil {
 			fmt.Println(err)
 		}
-		messages = append(messages, userMessage{To: to, From: from, Content: content})
+		messages = append(messages, userMessage{To: to, From: from, Content: content, Date: date})
 	}
 	// send messages to client
 	fmt.Println(messages)
