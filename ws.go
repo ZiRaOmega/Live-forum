@@ -178,6 +178,7 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+
 func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 	type Post struct {
 		Title      string   `json:"title"`
@@ -225,6 +226,7 @@ func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 
 	ws.WriteJSON(syncPosts)
 }
+
 func WsSynchronizeProfile(db *sql.DB, ws *websocket.Conn) {
 	type SyncProfile struct {
 		Username string `json:"username"`
@@ -344,10 +346,20 @@ func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Username := mp["username"].(string)
 	Date := mp["date"].(string)
 	Content := mp["content"].(string)
-	Categories := mp["categories"].([]interface{})
+	var Categories []string
+	switch v := mp["categories"].(type) {
+	case []interface{}:
+		for _, category := range v {
+			Categories = append(Categories, category.(string))
+		}
+	case string:
+		Categories = []string{v}
+	default:
+		// handle error case where value is not a string or slice of interfaces
+	}
 	Categoriesarray := []string{}
 	for _, category := range Categories {
-		Categoriesarray = append(Categoriesarray, category.(string))
+		Categoriesarray = append(Categoriesarray, fmt.Sprint(category))
 	}
 
 	CreatePost(db, Title, Username, Date, Content, Categoriesarray)
@@ -355,7 +367,6 @@ func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 	for client := range clients {
 		WsSynchronizePosts(db, client)
 	}
-
 }
 
 // private message using websocket

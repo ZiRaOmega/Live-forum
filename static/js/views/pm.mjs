@@ -17,10 +17,12 @@ export default {
         document.querySelector('#sender_button').addEventListener('click', () => {
             const field = document.querySelector('#sender');
             const text = field.value;
-            field.value = "";
-            
-            const recipient = currentDiscussion;
-            sendPrivateMessage(text, recipient);
+            if (text != "") {
+                field.value = "";
+                
+                const recipient = currentDiscussion;
+                sendPrivateMessage(text, recipient);
+            }
         });
     },
 }

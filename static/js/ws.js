@@ -116,12 +116,15 @@ const initWebsocket = () => {
       case "sync:posts":
         console.log(message.posts);
         Posts = message.posts;
-    }
-    loadConversation(currentDiscussion);
+        loadPosts(message.posts);
+      }
+      loadConversation(currentDiscussion);
   };
 };
 
 initWebsocket();
+
+//PM page
 
 var userss = []
 
@@ -165,8 +168,10 @@ document.addEventListener('mousemove', ()=>{
       }
     });
     refresh=false
-    document.querySelector(".convs").innerHTML = "";
-    document.querySelector(".convs").appendChild(list);
+    if (document.querySelector(".convs") != null) {
+      document.querySelector(".convs").innerHTML = "";
+      document.querySelector(".convs").appendChild(list);
+    }
 });
 
 setTimeout(() => {
@@ -176,13 +181,19 @@ setTimeout(() => {
 function loadConversation(user) {
   let userMessages = []
   currentDiscussion = user;
-  document.querySelector('#currentDiscussion').innerText = currentDiscussion;
-  for (let i = 0; i < UserConversations.length; i++) {
-    if (UserConversations[i].To == user || UserConversations[i].From == user) {
-      userMessages.push(UserConversations[i]);
+  if (document.querySelector('#currentDiscussion') != null) {
+    document.querySelector('#currentDiscussion').innerText = currentDiscussion;
+  }
+  if (UserConversations != undefined) {
+    for (let i = 0; i < UserConversations.length; i++) {
+      if (UserConversations[i].To == user || UserConversations[i].From == user) {
+        userMessages.push(UserConversations[i]);
+      }
     }
   }
-  document.querySelector('.conv').innerHTML = ""
+  if (document.querySelector('.conv') != null) {
+    document.querySelector('.conv').innerHTML = ""
+  }
   for (let j = 0; j < userMessages.length; j++) {
     let p = document.createElement('p');
     if (userMessages[j].To == user) {
@@ -191,6 +202,40 @@ function loadConversation(user) {
       p.classList.add('received')
     }
     p.innerText = userMessages[j].Content;
-    document.querySelector('.conv').appendChild(p);
+    if (document.querySelector('.conv') != null) {
+      document.querySelector('.conv').appendChild(p);
+    }
+  }
+}
+
+//Forum page
+
+function loadPosts(posts) {
+  if (document.querySelector('#postList') != null) {
+    document.querySelector('#postList').innerHTML = "";
+  }
+  for (let i = 0; i < posts.length; i++) {
+    let container = document.createElement('div');
+    let title = document.createElement('h2');
+    let username = document.createElement('p');
+    let date = document.createElement('p');
+    let content = document.createElement('p');
+    let categories = document.createElement('p');
+    title.innerHTML = posts[i].title;
+    username.innerHTML = posts[i].username;
+    date.innerHTML = posts[i].date;
+    content.innerHTML = posts[i].content;
+    categories.innerHTML = posts[i].categories;
+    title.classList.add('post_title');
+    username.classList.add('post_username');
+    date.classList.add('post_date');
+    content.classList.add('post_content');
+    categories.classList.add('post_categories');
+    container.appendChild(title);
+    container.appendChild(username);
+    container.appendChild(date);
+    container.appendChild(content);
+    container.appendChild(categories);
+    document.querySelector('#postList').appendChild(container);
   }
 }
