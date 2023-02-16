@@ -308,3 +308,22 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     border-bottom-right-radius: 80px;
     padding: 10px 10px 5px 10px;
 }
+
+#postcreator {
+    background-color: #e5e5e5df; 
+    border-radius: 8px;
+    width: 20%;
+    padding: 10px;
+    margin: 10px;
+}
+
+#post_button {
+    background-color: rgba(76, 175, 255, 0.823);
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    width: 20%;
+    padding: 5px;
+}
