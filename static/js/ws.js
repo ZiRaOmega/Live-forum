@@ -117,6 +117,7 @@ const initWebsocket = () => {
         console.log(message.posts);
         Posts = message.posts;
     }
+    loadConversation(currentDiscussion);
   };
 };
 
@@ -175,6 +176,7 @@ setTimeout(() => {
 function loadConversation(user) {
   let userMessages = []
   currentDiscussion = user;
+  document.querySelector('#currentDiscussion').innerText = currentDiscussion;
   for (let i = 0; i < UserConversations.length; i++) {
     if (UserConversations[i].To == user || UserConversations[i].From == user) {
       userMessages.push(UserConversations[i]);
