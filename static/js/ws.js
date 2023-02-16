@@ -17,7 +17,11 @@ let user = {
 let UserConversations = [];
 let UsersOnline = [];
 let UserList = [];
+<<<<<<< HEAD
 let Posts = [];
+=======
+let currentDiscussion = "";
+>>>>>>> b1884c334ee7bf46e0c635ecd1f735c90e29476a
 
 /**
  * @type {Websocket}
@@ -149,6 +153,7 @@ function loadConversation(user) {
   for (let i = 0; i < UserConversations.length; i++) {
     if (UserConversations[i].To == user || UserConversations[i].From == user) {
       userMessages.push(UserConversations[i]);
+      currentDiscussion = user;
     }
   }
   document.querySelector('.conv').innerHTML = ""
