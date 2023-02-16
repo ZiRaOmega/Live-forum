@@ -17,11 +17,8 @@ let user = {
 let UserConversations = [];
 let UsersOnline = [];
 let UserList = [];
-<<<<<<< HEAD
 let Posts = [];
-=======
 let currentDiscussion = "";
->>>>>>> b1884c334ee7bf46e0c635ecd1f735c90e29476a
 
 /**
  * @type {Websocket}
