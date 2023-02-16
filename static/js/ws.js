@@ -17,6 +17,7 @@ let user = {
 let UserConversations = [];
 let UsersOnline = [];
 let UserList = [];
+let Posts = [];
 
 /**
  * @type {Websocket}
@@ -86,6 +87,7 @@ const initWebsocket = () => {
         break;
       case "sync:posts":
         console.log(message.posts);
+        Posts = message.posts;
     }
   };
 };
