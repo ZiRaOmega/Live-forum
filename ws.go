@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	// import json
@@ -168,6 +169,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsSynchronizeUsers(db, ws)
 		case "sync:userList":
 			WsSynchronizeUserList(db, ws)
+		case "sync:posts":
+			WsSynchronizePosts(db, ws)
 		case "ping":
 			fmt.Printf("Client %d/%s (%s) has pinged.\n", clients[ws].UserId, clients[ws].Username, clients[ws].SessionId)
 			ws.WriteJSON(map[string]string{
@@ -176,7 +179,53 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
+	type Post struct {
+		Title      string   `json:"title"`
+		Username   string   `json:"username"`
+		Date       string   `json:"date"`
+		Content    string   `json:"content"`
+		Categories []string `json:"categories"`
+	}
 
+	Posts := []Post{}
+
+	rows, err := db.Query("SELECT idPost,title, username, date, content, categories FROM post")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var idPost int
+		var title string
+		var username string
+		var date string
+		var content string
+		var categories string
+		if err := rows.Scan(&idPost, &title, &username, &date, &content, &categories); err != nil {
+			log.Fatal(err)
+		}
+		Posts = append(Posts, Post{
+			Title:      title,
+			Username:   username,
+			Date:       date,
+			Content:    content,
+			Categories: strings.Split(categories, ";"),
+		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	type SyncPosts struct {
+		Posts []Post `json:"posts"`
+		Type  string `json:"type"`
+	}
+
+	syncPosts := SyncPosts{Posts: Posts, Type: "sync:posts"}
+
+	ws.WriteJSON(syncPosts)
+}
 func WsSynchronizeProfile(db *sql.DB, ws *websocket.Conn) {
 	type SyncProfile struct {
 		Username string `json:"username"`
