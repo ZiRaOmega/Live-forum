@@ -41,7 +41,18 @@ const sendPrivateMessage = (message, recipient) => {
     }
   }));
 };
-
+const CreatePost = (title,content,categories) => {
+  websocket.send(JSON.stringify({
+    "type": "post",
+    "message": {
+      "title": title,
+      "username": user.username,
+      "date": Date.now().toString(),
+      "content": content,
+      "categories": categories,
+    }
+  }));
+};
 const synchronizeProfile = () => {
   var message = new Message("server", "request", "sync:profile");
   websocket.send(message.stringify());
