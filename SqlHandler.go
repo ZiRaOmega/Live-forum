@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	// mattn/go-sqlite3
@@ -71,7 +72,7 @@ func CreatePost(db *sql.DB, Title string, Username string, Date string, Content 
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(Title, Username, Date, Content, Categories)
+	_, err = stmt.Exec(Title, Username, Date, Content, strings.Join(Categories, ";"))
 	if err != nil {
 		log.Fatal(err)
 	}
