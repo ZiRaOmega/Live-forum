@@ -163,10 +163,10 @@ setTimeout(() => {
 
 function loadConversation(user) {
   let userMessages = []
+  currentDiscussion = user;
   for (let i = 0; i < UserConversations.length; i++) {
     if (UserConversations[i].To == user || UserConversations[i].From == user) {
       userMessages.push(UserConversations[i]);
-      currentDiscussion = user;
     }
   }
   document.querySelector('.conv').innerHTML = ""
