@@ -12,5 +12,14 @@ export default {
         <div>
         </div>`;
     },
-    postRender: () => { },
+    postRender: () => {
+        document.querySelector('#sender_button').addEventListener('click', () => {
+            const field = document.querySelector('#sender');
+            const text = field.value;
+            field.value = "";
+            
+            const recipient = currentDiscussion;
+            sendPrivateMessage(text, recipient);
+        });
+    },
 }
