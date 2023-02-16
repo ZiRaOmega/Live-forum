@@ -3,6 +3,7 @@ export default {
         return `<div class="convHolder">
         <div class="conv">
         </div>
+        <div id="currentDiscussion">Guest</div>
         <input id="sender" type="text" placeholder="Send">
         <button id="sender_button">Envoyer</button>
         </div>
