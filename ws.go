@@ -11,7 +11,6 @@ import (
 	"time"
 
 	// import json
-	"encoding/json"
 
 	"github.com/gorilla/websocket"
 	// import uuid
@@ -339,17 +338,24 @@ func (m *Message) ConvertInterface() []byte {
 
 // post using websocket
 func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
-	Content := PostMessage{}
-	json.Unmarshal(Message.ConvertInterface(), &Content)
-	// post
-	Creator := Content.Creator
-	Title := Content.Title
-	Contentt := Content.Content
-	Categories := Content.Categories
-	Comments := Content.Comments
-	CreatePost(db, Creator, Title, Contentt, strings.Join(Categories, ";"), Comments)
-	Answer := ServerAnswer{Answer: "success", Type: "post"}
-	ws.WriteJSON(Answer)
+	var mp map[string]interface{} = Message.Message.(map[string]interface{})
+	fmt.Println(mp)
+	Title := mp["title"].(string)
+	Username := mp["username"].(string)
+	Date := mp["date"].(string)
+	Content := mp["content"].(string)
+	Categories := mp["categories"].([]interface{})
+	Categoriesarray := []string{}
+	for _, category := range Categories {
+		Categoriesarray = append(Categoriesarray, category.(string))
+	}
+
+	CreatePost(db, Title, Username, Date, Content, Categoriesarray)
+
+	for client := range clients {
+		WsSynchronizePosts(db, client)
+	}
+
 }
 
 // private message using websocket
