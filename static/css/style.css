@@ -263,3 +263,22 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
 .online {
     background-color: green;
 }
+
+.received {
+    background-color: #e5e5e5df; 
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    left: 0%;
+    padding: 10px;
+    width: min-content;
+}
+
+.sent {
+    background-color: rgba(76, 174, 255, 0.242);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    right: 0%;
+    position: absolute;
+    padding: 10px;
+    width: min-content;
+}
