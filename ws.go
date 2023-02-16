@@ -347,25 +347,24 @@ func WsPost(db *sql.DB, ws *websocket.Conn, Message Message) {
 	Contentt := Content.Content
 	Categories := Content.Categories
 	Comments := Content.Comments
-	CreatePost(db, Creator, Title, Contentt, Categories, Comments)
+	CreatePost(db, Creator, Title, Contentt, strings.Join(Categories, ";"), Comments)
 	Answer := ServerAnswer{Answer: "success", Type: "post"}
 	ws.WriteJSON(Answer)
 }
 
 // private message using websocket
 func WsPrivate(db *sql.DB, ws *websocket.Conn, message Message) {
-	Content := PrivateMessage{}
-	json.Unmarshal(message.ConvertInterface(), &Content)
-	// private message
-	fmt.Println(Content)
-	From := Content.From
-	To := Content.To
-	Contentt := Content.Content
-	Date := Content.Date
-	CreatePrivateMessage(db, From, To, Contentt, Date)
+	var mp map[string]interface{} = message.Message.(map[string]interface{})
+	fmt.Println(mp)
+	From := mp["from"].(string)
+	To := mp["to"].(string)
+	Content := mp["content"].(string)
+	Date := mp["date"].(string)
+	CreatePrivateMessage(db, From, To, Content, Date)
 
-	newMessage := Message{Message_Type: "private", Message: Content}
-	broadcastMessage(newMessage)
+	for client := range clients {
+		WsSynchronizeMessages(db, client, message)
+	}
 }
 
 func broadcastMessage(msg Message) {
