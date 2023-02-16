@@ -30,6 +30,18 @@ const ping = () => {
   websocket.send(message.stringify());
 };
 
+const sendPrivateMessage = (message, recipient) => {
+  websocket.send(JSON.stringify({
+    "type": "private",
+    "message": {
+      "from": user.username,
+      "to": recipient,
+      "content": message,
+      "date": Date.now().toString(),
+    }
+  }));
+};
+
 const synchronizeProfile = () => {
   var message = new Message("server", "request", "sync:profile");
   websocket.send(message.stringify());
