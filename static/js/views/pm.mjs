@@ -1,6 +1,8 @@
 export default {
     render: () => {
-        return `<div class="conv">
+        return `<div class="convHolder">
+        <div class="conv">
+        </div>
         <input id="sender" type="text" placeholder="Send">
         <button id="sender_button">Envoyer</button>
         </div>

@@ -81,7 +81,8 @@ const initWebsocket = () => {
       case "sync:userList":
         console.log(message.userList);
         UserList = message.userList;
-        createList(UserList)
+        UserConversations = message.Messages;
+        createList(UserList, message.Messages)
         break;
     }
   };
@@ -113,10 +114,13 @@ document.addEventListener('mousemove', ()=>{
     const list = document.createElement("ul");
     userss.forEach(item => {
       if (item != user.username) {
-        const listItem = document.createElement("li");
         const span = document.createElement("span");
+        const user = document.createElement("p");
+        user.addEventListener('click', function() {
+          loadConversation(item);
+        });
+        user.textContent = item;
         span.classList.add("dot");
-        listItem.innerHTML = item;
         list.classList.add("cr");
         for (let i = 0; i < UsersOnline.length; i++) {
           if (UsersOnline[i].username == item) {
@@ -124,10 +128,34 @@ document.addEventListener('mousemove', ()=>{
           }
         }
         list.appendChild(span);
-        list.appendChild(listItem);
+        list.appendChild(user);
       }
     });
     refresh=false
     document.querySelector(".convs").innerHTML = "";
     document.querySelector(".convs").appendChild(list);
 });
+
+setTimeout(() => {
+  document.querySelector('#user').innerText = user.username;
+}, 500);
+
+function loadConversation(user) {
+  let userMessages = []
+  for (let i = 0; i < UserConversations.length; i++) {
+    if (UserConversations[i].To == user || UserConversations[i].From == user) {
+      userMessages.push(UserConversations[i]);
+    }
+  }
+  document.querySelector('.conv').innerHTML = ""
+  for (let j = 0; j < userMessages.length; j++) {
+    let p = document.createElement('p');
+    if (userMessages[j].To == user) {
+      p.classList.add('sent')
+    } else {
+      p.classList.add('received')
+    }
+    p.innerText = userMessages[j].Content;
+    document.querySelector('.conv').appendChild(p);
+  }
+}
