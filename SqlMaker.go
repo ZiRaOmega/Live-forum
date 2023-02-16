@@ -47,6 +47,7 @@ func sqlMaker(db *sql.DB) {
 	createMpTable(db)
 	createUserTable(db)
 	CreateUUIDTable(db)
+	createPostTable(db)
 	// createConversationsTable(db)
 	createSessionTable(db)
 
@@ -280,14 +281,9 @@ func createPostTable(db *sql.DB) {
 		"idPost" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"title" TEXT,
 		"username" TEXT,
-		"profile_picture" TEXT,	
 		"date" TEXT,
 		"content" TEXT,
-		"image_in_post" TEXT,
-		"nbr_likes" integer,
-		"nbr_dislikes" integer,
-		"nbr_comments" integer,
-		"categories" string
+		"categories" TEXT
 
 	  );` // SQL Statement for Create Table
 

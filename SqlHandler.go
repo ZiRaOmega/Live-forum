@@ -64,14 +64,14 @@ func DidUserExist(db *sql.DB, username string) bool {
 	return rows.Next()
 }
 
-func CreatePost(db *sql.DB, Creator string, Title string, Content string, Categories []string, Comments []string) {
+func CreatePost(db *sql.DB, Title string, Username string, Date string, Content string, Categories []string) {
 	// Insert Post into Database
-	stmt, err := db.Prepare("INSERT INTO posts(creator, title, content, categories, comments) VALUES(?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO post(title,username,date, content, categories) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(Creator, Title, Content, Categories, Comments)
+	_, err = stmt.Exec(Title, Username, Date, Content, Categories)
 	if err != nil {
 		log.Fatal(err)
 	}
