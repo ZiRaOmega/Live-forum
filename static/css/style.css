@@ -159,6 +159,11 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     margin-bottom: 10px;
 }
 
+.conv {
+    display: flex;
+    flex-direction: column;
+}
+
 .recentconv {
     position: absolute;
     width: 20%;
@@ -267,21 +272,39 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     background-color: green;
 }
 
-.received {
+.sent {
     background-color: #e5e5e5df; 
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     left: 0%;
     padding: 10px;
-    width: min-content;
+    width: fit-content;
+    margin-right: 70%;
 }
 
-.sent {
+.received {
     background-color: rgba(76, 174, 255, 0.242);
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
     right: 0%;
-    position: absolute;
     padding: 10px;
-    width: min-content;
+    text-align: right;
+    width: auto;
+    margin-left: 70%;
+    display: flex;
+    align-self: flex-end;
+}
+
+#currentDiscussion {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    background-color: rgba(76, 175, 255, 0.823);
+    color: white;
+    font-weight: bold;
+    width: 20%;
+    font-family:Helvetica;
+    letter-spacing: 1px;
+    border-bottom-right-radius: 80px;
+    padding: 10px 10px 5px 10px;
 }
