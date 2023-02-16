@@ -84,6 +84,8 @@ const initWebsocket = () => {
         UserConversations = message.Messages;
         createList(UserList, message.Messages)
         break;
+      case "sync:posts":
+        console.log(message.posts);
     }
   };
 };
