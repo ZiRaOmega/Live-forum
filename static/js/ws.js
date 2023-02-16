@@ -17,6 +17,7 @@ let user = {
 let UserConversations = [];
 let UsersOnline = [];
 let UserList = [];
+let currentDiscussion = "";
 
 /**
  * @type {Websocket}
@@ -147,6 +148,7 @@ function loadConversation(user) {
   for (let i = 0; i < UserConversations.length; i++) {
     if (UserConversations[i].To == user || UserConversations[i].From == user) {
       userMessages.push(UserConversations[i]);
+      currentDiscussion = user;
     }
   }
   document.querySelector('.conv').innerHTML = ""
