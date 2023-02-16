@@ -92,10 +92,11 @@ initWebsocket();
 var userss = []
 
 function createList(users) {
+  userss = []
   users.forEach(item => {
       userss.push(item.username)
   });
-  document.querySelector(".recentconv").appendChild(list);
+  //document.querySelector(".convs").appendChild(list);
 }
 var refresh = false
 setInterval(() => {
@@ -109,9 +110,6 @@ document.addEventListener('mousemove', ()=>{
     return
   }
   var crs = document.getElementsByClassName('cr');
-  if (crs.length > 0) {
-    return
-  } else {
     const list = document.createElement("ul");
     userss.forEach(item => {
       if (item != user.username) {
@@ -130,6 +128,6 @@ document.addEventListener('mousemove', ()=>{
       }
     });
     refresh=false
-    document.querySelector(".recentconv").appendChild(list);
-  }
+    document.querySelector(".convs").innerHTML = "";
+    document.querySelector(".convs").appendChild(list);
 });

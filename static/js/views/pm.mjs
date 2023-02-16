@@ -6,6 +6,8 @@ export default {
         </div>
         <div class="recentconv">
         <div id="recent">Recent</div>
+        <div class="convs">
+        <div>
         </div>`;
     },
     postRender: () => { },
