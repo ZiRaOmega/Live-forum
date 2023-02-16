@@ -51,7 +51,10 @@ const synchronizeMessages = () => {
   var message = new Message("server", "request", "sync:messages");
   websocket.send(message.stringify());
 };
-
+const synchronizePosts = () => {
+  var message = new Message("server", "request", "sync:posts");
+  websocket.send(message.stringify());
+};
 const synchronizeUsers = () => {
   var message = new Message("server", "request", "sync:users");
   websocket.send(message.stringify());
@@ -75,6 +78,7 @@ const initWebsocket = () => {
     synchronizeProfile();
     synchronizeMessages();
     synchronizeUsers();
+    synchronizePosts();
   };
 
   websocket.onmessage = function (event) {
