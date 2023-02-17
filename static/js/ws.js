@@ -232,12 +232,17 @@ function loadPosts(posts) {
     let date = document.createElement('p');
     let content = document.createElement('p');
     let categories = document.createElement('p');
+    let comment = document.createElement('p');
     title.innerHTML = posts[i].title;
     username.innerHTML = posts[i].username;
     postDate = new Date(Number(posts[i].date)).toUTCString();
     date.innerHTML = postDate
     content.innerHTML = posts[i].content;
     categories.innerHTML = posts[i].categories;
+    for (let j = 0; j < posts[i].comments.length; j++) {
+      comment.innerHTML += posts[i].comments[j].username + ": " + posts[i].comments[j].comment + "<br>";
+    }
+    
     title.classList.add('post_title');
     username.classList.add('post_username');
     date.classList.add('post_date');
@@ -248,6 +253,7 @@ function loadPosts(posts) {
     container.appendChild(date);
     container.appendChild(content);
     container.appendChild(categories);
+    container.appendChild(comment);
     document.querySelector('#postList').appendChild(container);
   }
 }
