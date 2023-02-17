@@ -335,7 +335,7 @@ func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 	username := clients[ws].Username
 
 	// get all messages from user
-	rows, err := db.Query("SELECT * FROM mp WHERE receiver = ? OR sender = ?", username, username)
+	rows, err := db.Query("SELECT sender, receiver, content, date FROM mp WHERE receiver = ? OR sender = ?", username, username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -346,7 +346,7 @@ func WsSynchronizeMessages(db *sql.DB, ws *websocket.Conn, Message Message) {
 		var from string
 		var content string
 		var date string
-		err := rows.Scan(&to, &from, &content, &date)
+		err := rows.Scan(&from, &to, &content, &date)
 		if err != nil {
 			fmt.Println(err)
 		}
