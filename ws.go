@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -186,10 +187,15 @@ func WsComment(db *sql.DB, ws *websocket.Conn, msg Message) {
 	fmt.Println(mp)
 	content := mp["content"].(string)
 	Username := mp["username"].(string)
-	postID := mp["postID"].(int)
+	postIDStr := mp["postID"].(string)
 
-	fmt.Println(content, Username, postID)
-	AddComment(db, content, Username, int(postID))
+	postId, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	fmt.Println(content, Username, postId)
+	AddComment(db, content, Username, postId)
 	WsSynchronizePosts(db, ws)
 }
 
