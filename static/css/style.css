@@ -377,6 +377,7 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     padding-top: 20px;
     border-top: 1px solid black;
     width: 60%;
+    padding: 10px;
 }
 
 .response {
@@ -386,4 +387,14 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     width: 50%;
     height: 15px;
     border-radius: 0px;
+}
+
+.resp_button {
+    color: white;
+    width: 15%;
+    background-color: gray;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 5px;
 }
