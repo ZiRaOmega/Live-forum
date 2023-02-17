@@ -250,6 +250,7 @@ function loadPosts(posts) {
     content.classList.add('post_content');
     categories.classList.add('post_categories');
     comment.classList.add('post_comment')
+    comment.style.display = "none";
     container.appendChild(title);
     container.appendChild(username);
     container.appendChild(date);
@@ -257,5 +258,11 @@ function loadPosts(posts) {
     container.appendChild(categories);
     container.appendChild(comment);
     document.querySelector('#postList').appendChild(container);
+
+    container.addEventListener('click', (ev) => {
+      const comments = ev.target.querySelector('.post_comment');
+      if (comments.style.display === "none") comments.style.display = "block";
+      else comments.style.display = "none";
+    });
   }
 }
