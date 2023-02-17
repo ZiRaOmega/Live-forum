@@ -243,12 +243,13 @@ function loadPosts(posts) {
     for (let j = 0; j < posts[i].comments.length; j++) {
       comment.innerHTML += posts[i].comments[j].username + ": " + posts[i].comments[j].comment + "<br>";
     }
-    
+    container.classList.add('post_container')
     title.classList.add('post_title');
     username.classList.add('post_username');
     date.classList.add('post_date');
     content.classList.add('post_content');
     categories.classList.add('post_categories');
+    comment.classList.add('post_comment')
     container.appendChild(title);
     container.appendChild(username);
     container.appendChild(date);
