@@ -53,6 +53,17 @@ const CreatePost = (title,content,categories) => {
     }
   }));
 };
+const AddComment = (content,postID) => {
+  websocket.send(JSON.stringify({
+    "type": "comment",
+    "message": {
+      "username": user.username,
+      "content": content,
+      "postID": postID,
+    },
+    "username": user.username
+  }));
+};
 const synchronizeProfile = () => {
   var message = new Message("server", "request", "sync:profile");
   websocket.send(message.stringify());
