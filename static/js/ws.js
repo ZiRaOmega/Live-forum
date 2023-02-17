@@ -195,6 +195,14 @@ document.addEventListener("mousemove", () => {
   if (!refresh) {
     return;
   }
+  const element = document.querySelector('.convHolder');
+
+  element.addEventListener('scroll', function() {
+    if (element.scrollTop === 0) {
+      console.log('Scrollbar has reached the top!');
+      loadConversation(currentDiscussion);
+    }
+  });
   var crs = document.getElementsByClassName("cr");
   const list = document.createElement("ul");
 
