@@ -160,6 +160,8 @@ func MessageHandler(ws *websocket.Conn) {
 			WsPost(db, ws, msg)
 		case "private":
 			WsPrivate(db, ws, msg)
+		case "comment":
+			WsComment(db, ws, msg)
 		case "sync:profile":
 			WsSynchronizeProfile(db, ws)
 		case "sync:messages":
@@ -178,19 +180,36 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+func WsComment(db *sql.DB, ws *websocket.Conn, msg Message) {
+	var mp map[string]interface{} = msg.Message.(map[string]interface{})
+	fmt.Println(mp)
+	content := mp["content"].(string)
+	Username := mp["username"].(string)
+	postID := mp["postID"].(float64)
 
+	fmt.Println(content, Username, postID)
+	AddComment(db, Username, content, int(postID))
+	WsSynchronizePosts(db, ws)
+}
 func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
+	type Comment struct {
+		Comment  string `json:"comment"`
+		Username string `json:"username"`
+		Date     string `json:"date"`
+	}
 	type Post struct {
-		Title      string   `json:"title"`
-		Username   string   `json:"username"`
-		Date       string   `json:"date"`
-		Content    string   `json:"content"`
-		Categories []string `json:"categories"`
+		Title      string    `json:"title"`
+		Username   string    `json:"username"`
+		Date       string    `json:"date"`
+		Content    string    `json:"content"`
+		Categories []string  `json:"categories"`
+		Comments   []Comment `json:"comments"`
 	}
 
 	Posts := []Post{}
 
 	rows, err := db.Query("SELECT idPost,title, username, date, content, categories FROM post")
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -205,12 +224,33 @@ func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 		if err := rows.Scan(&idPost, &title, &username, &date, &content, &categories); err != nil {
 			log.Fatal(err)
 		}
+		rowsComments, err := db.Query("SELECT comment, username, date FROM comments WHERE postID = ? ", idPost)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rowsComments.Close()
+
+		Comments := []Comment{}
+		for rowsComments.Next() {
+			var comment string
+			var username string
+			var date string
+			if err := rowsComments.Scan(&comment, &username, &date); err != nil {
+				log.Fatal(err)
+			}
+			Comments = append(Comments, Comment{
+				Comment:  comment,
+				Username: username,
+				Date:     date,
+			})
+		}
 		Posts = append(Posts, Post{
 			Title:      title,
 			Username:   username,
 			Date:       date,
 			Content:    content,
 			Categories: strings.Split(categories, ";"),
+			Comments:   Comments,
 		})
 	}
 	if err := rows.Err(); err != nil {

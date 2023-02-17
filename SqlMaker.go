@@ -48,6 +48,7 @@ func sqlMaker(db *sql.DB) {
 	createUserTable(db)
 	CreateUUIDTable(db)
 	createPostTable(db)
+	createCommentsTable(db)
 	// createConversationsTable(db)
 	createSessionTable(db)
 
@@ -283,8 +284,8 @@ func createPostTable(db *sql.DB) {
 		"username" TEXT,
 		"date" TEXT,
 		"content" TEXT,
-		"categories" TEXT
-
+		"categories" TEXT,
+		"comments" TEXT
 	  );` // SQL Statement for Create Table
 
 	statement, err := db.Prepare(createPostTableSQL) // Prepare SQL Statement
@@ -310,21 +311,34 @@ func createMpTable(db *sql.DB) {
 }
 
 /*
-func createConversationsTable(db *sql.DB) {
-	createConversationsTableSQL := `CREATE TABLE IF NOT EXISTS conversations (
-        "sender" TEXT,
-        "receiver" TEXT,
-        "lastMessage" TEXT
-      );` // SQL Statement for Create Table
+	func createConversationsTable(db *sql.DB) {
+		createConversationsTableSQL := `CREATE TABLE IF NOT EXISTS conversations (
+	        "sender" TEXT,
+	        "receiver" TEXT,
+	        "lastMessage" TEXT
+	      );` // SQL Statement for Create Table
 
-	statement, err := db.Prepare(createConversationsTableSQL) // Prepare SQL Statement
+		statement, err := db.Prepare(createConversationsTableSQL) // Prepare SQL Statement
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		statement.Exec() // Execute SQL Statements
+	}
+*/
+func AddComment(db *sql.DB, comment string, usernames string, postID int) {
+	insertSQL := `INSERT INTO comments(comment, username, date, postID) VALUES (?, ?, ?, ?)`
+	statement, err := db.Prepare(insertSQL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	statement.Exec() // Execute SQL Statements
-}
-*/
 
+	date := time.Now().UnixNano() / 1000000
+	_, err = statement.Exec(comment, usernames, date, postID)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
 func insertComment(db *sql.DB, comment string, usernames string, postID int) {
 	go Log("[\033[33m>\033[0m] Inserting comment")
 	insertCommentarySQL := `INSERT INTO comments(comment, username, date, postID) VALUES (?, ?, ?, ?)`
