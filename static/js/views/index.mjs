@@ -10,6 +10,7 @@ export default {
         </div>`;
     },
     postRender: () => { 
+        loadPosts(Posts);
         document.querySelector('#post_button').addEventListener('click', function() {
             let title = document.querySelector('#post_title').value;
             let content = document.querySelector('#post_content').value;
