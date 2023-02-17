@@ -134,6 +134,7 @@ const initWebsocket = () => {
       case "sync:userList":
         console.log(message.userList);
         UserList = message.userList;
+        createList(UserList);
         break;
       case "sync:posts":
         console.log(message.posts);

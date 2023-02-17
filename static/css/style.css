@@ -275,7 +275,7 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     background-color: green;
 }
 
-.sent {
+.received {
     background-color: #e5e5e5df; 
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -285,7 +285,7 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     margin-right: 70%;
 }
 
-.received {
+.sent {
     background-color: rgba(76, 174, 255, 0.242);
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
