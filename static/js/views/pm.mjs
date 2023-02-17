@@ -16,10 +16,12 @@ export default {
     postRender: () => {
         document.querySelector('#sender_button').addEventListener('click', () => {
             const field = document.querySelector('#sender');
-            const text = field.value;
+            let text = field.value;
             if (text != "") {
                 field.value = "";
                 
+                text = text.replaceAll("$", "🐧");
+            
                 const recipient = currentDiscussion;
                 sendPrivateMessage(text, recipient);
             }
