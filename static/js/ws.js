@@ -260,7 +260,7 @@ function loadPosts(posts) {
     document.querySelector('#postList').appendChild(container);
 
     container.addEventListener('click', (ev) => {
-      const comments = ev.target.querySelector('.post_comment');
+      const comments = ev.currentTarget.querySelector('.post_comment');
       if (comments.style.display === "none") comments.style.display = "block";
       else comments.style.display = "none";
     });
