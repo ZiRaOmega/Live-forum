@@ -127,6 +127,7 @@ const initWebsocket = () => {
       case "sync:posts":
         console.log(message.posts);
         Posts = message.posts;
+        loadPosts(Posts)
         break;
       }
       loadConversation(currentDiscussion);
