@@ -188,7 +188,7 @@ func WsComment(db *sql.DB, ws *websocket.Conn, msg Message) {
 	postID := mp["postID"].(float64)
 
 	fmt.Println(content, Username, postID)
-	AddComment(db, Username, content, int(postID))
+	AddComment(db, content, Username, int(postID))
 	WsSynchronizePosts(db, ws)
 }
 func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
