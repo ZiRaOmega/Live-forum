@@ -48,6 +48,7 @@ const CreatePost = (title, content, categories) => {
     JSON.stringify({
       type: "post",
       message: {
+        id: id,
         title: title,
         username: user.username,
         date: Date.now().toString(),
@@ -131,8 +132,6 @@ const initWebsocket = () => {
       case "sync:userList":
         console.log(message.userList);
         UserList = message.userList;
-        UserConversations = message.Messages;
-        createList(UserList, message.Messages);
         break;
       case "sync:posts":
         console.log(message.posts);
@@ -296,8 +295,9 @@ function loadPosts(posts) {
     let content = document.createElement("p");
     let categories = document.createElement("p");
     let comment = document.createElement("p");
-    let response = document.createElement("input")
-    let resp_button = document.createElement("button")
+    let response = document.createElement("input");
+    let postID = document.createElement("input");
+    let resp_button = document.createElement("button");
     resp_button.innerText = "Send"
     resp_button.classList.add("resp_button")
     response.placeholder = "Comment"
@@ -309,6 +309,7 @@ function loadPosts(posts) {
     date.innerHTML = postDate;
     content.innerHTML = posts[i].content;
     categories.innerHTML = posts[i].categories;
+    postID.setAttribute("value", posts[i].id);
     for (let j = 0; j < posts[i].comments.length; j++) {
       comment.innerHTML +=
         posts[i].comments[j].username +
@@ -323,15 +324,18 @@ function loadPosts(posts) {
     content.classList.add("post_content");
     categories.classList.add("post_categories");
     comment.classList.add("post_comment");
+    postID.classList.add("post_id");
     comment.style.display = "none";
+    postID.style.display = "none";
     container.appendChild(title);
     container.appendChild(username);
     container.appendChild(date);
     container.appendChild(content);
     container.appendChild(categories);
     container.appendChild(comment);
-    container.appendChild(response)
-    container.appendChild(resp_button)
+    container.appendChild(response);
+    container.appendChild(postID);
+    container.appendChild(resp_button);
     document.querySelector("#postList").appendChild(container);
 
     container.addEventListener("click", (ev) => {
