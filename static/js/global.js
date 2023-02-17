@@ -47,3 +47,4 @@ const logout = async (ev) => {
     currentDiscussion = "";
     await fetch("/api/logout");
 };
+
