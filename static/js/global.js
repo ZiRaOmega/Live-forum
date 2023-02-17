@@ -39,5 +39,10 @@ const register = async(ev) => {
 
 const logout = async (ev) => {
     websocket.close();
+    UserConversations = [];
+    UsersOnline = [];
+    UserList = [];
+    Posts = [];
+    currentDiscussion = "";
     await fetch("/api/logout");
 };
