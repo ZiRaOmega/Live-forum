@@ -36,3 +36,8 @@ const register = async(ev) => {
         return r;
     });
 };
+
+const logout = async (ev) => {
+    websocket.close();
+    await fetch("/api/logout");
+};
