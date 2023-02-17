@@ -94,8 +94,10 @@ const synchronizeUserList = () => {
   websocket.send(message.stringify());
 };
 const AutoScrollMessages = () => {
-  var conv = document.getElementsByClassName("convHolder")[0];
-  conv.scrollTop = conv.scrollHeight;
+  if (document.getElementsByClassName("convHolder")[0] != null) {
+    var conv = document.getElementsByClassName("convHolder")[0];
+    conv.scrollTop = conv.scrollHeight;
+  }
 }
 const initWebsocket = () => {
   if (websocket && websocket.readyState == WebSocket.OPEN) {
@@ -336,7 +338,9 @@ function loadPosts(posts) {
     container.appendChild(response);
     container.appendChild(postID);
     container.appendChild(resp_button);
-    document.querySelector("#postList").appendChild(container);
+    if (document.querySelector("#postList") != null) {
+      document.querySelector("#postList").appendChild(container);
+    }
 
     container.addEventListener("click", (ev) => {
       const comments = ev.currentTarget.querySelector(".post_comment");
