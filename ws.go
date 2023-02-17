@@ -180,17 +180,19 @@ func MessageHandler(ws *websocket.Conn) {
 		}
 	}
 }
+
 func WsComment(db *sql.DB, ws *websocket.Conn, msg Message) {
 	var mp map[string]interface{} = msg.Message.(map[string]interface{})
 	fmt.Println(mp)
 	content := mp["content"].(string)
 	Username := mp["username"].(string)
-	postID := mp["postID"].(float64)
+	postID := mp["postID"].(int)
 
 	fmt.Println(content, Username, postID)
 	AddComment(db, content, Username, int(postID))
 	WsSynchronizePosts(db, ws)
 }
+
 func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 	type Comment struct {
 		Comment  string `json:"comment"`
@@ -198,6 +200,7 @@ func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 		Date     string `json:"date"`
 	}
 	type Post struct {
+		ID         int       `json:"id"`
 		Title      string    `json:"title"`
 		Username   string    `json:"username"`
 		Date       string    `json:"date"`
@@ -209,7 +212,6 @@ func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 	Posts := []Post{}
 
 	rows, err := db.Query("SELECT idPost,title, username, date, content, categories FROM post")
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -245,6 +247,7 @@ func WsSynchronizePosts(db *sql.DB, ws *websocket.Conn) {
 			})
 		}
 		Posts = append(Posts, Post{
+			ID:         idPost,
 			Title:      title,
 			Username:   username,
 			Date:       date,

@@ -28,5 +28,19 @@ export default {
                 document.querySelector('#postcreator').appendChild(success);
             }
         });
+        const respButtons = document.querySelectorAll('.resp_button');
+
+        respButtons.forEach(function(respButton) {
+          respButton.addEventListener('click', function() {
+            const postDiv = respButton.closest('.post_container');
+            const postCommentResponse = postDiv.querySelector('.response');
+            const postId = postDiv.querySelector('.post_id');
+    
+            const commentResponseValue = postCommentResponse.value;
+            const postIdValue = postId.value;
+    
+            AddComment(commentResponseValue, postIdValue);
+          });
+        });
     },
 }
