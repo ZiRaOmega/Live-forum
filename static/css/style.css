@@ -343,6 +343,7 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     margin: 10px;
     cursor: pointer;
     position: relative;
+    flex-direction: column;
 }
 
 .post_username {
@@ -355,13 +356,6 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     position:absolute;
     left: 10%;
     top: 0%;
-}
-
-.post_content {
-    left: 1%;
-    top:40%;
-    position: absolute;
-    padding-top: 20px;
 }
 
 .post_title {
@@ -377,4 +371,30 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     border: 2px solid rgba(45,137,253,1);
     border-radius: 8px;
     padding: 2px;
+}
+
+.post_comment {
+    padding-top: 20px;
+    border-top: 1px solid black;
+    width: 60%;
+    padding: 10px;
+}
+
+.response {
+    background-color: transparent;
+    padding: 20px;
+    border:solid gray 1px;
+    width: 50%;
+    height: 15px;
+    border-radius: 0px;
+}
+
+.resp_button {
+    color: white;
+    width: 15%;
+    background-color: gray;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 5px;
 }
