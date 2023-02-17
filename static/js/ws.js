@@ -116,7 +116,7 @@ const initWebsocket = () => {
       case "sync:posts":
         console.log(message.posts);
         Posts = message.posts;
-        loadPosts(message.posts);
+        break;
       }
       loadConversation(currentDiscussion);
   };
@@ -223,7 +223,8 @@ function loadPosts(posts) {
     let categories = document.createElement('p');
     title.innerHTML = posts[i].title;
     username.innerHTML = posts[i].username;
-    date.innerHTML = posts[i].date;
+    postDate = new Date(Number(posts[i].date)).toUTCString();
+    date.innerHTML = postDate
     content.innerHTML = posts[i].content;
     categories.innerHTML = posts[i].categories;
     title.classList.add('post_title');
