@@ -278,6 +278,9 @@ function loadPosts(posts) {
     let categories = document.createElement("p");
     let comment = document.createElement("p");
     let response = document.createElement("input")
+    let resp_button = document.createElement("button")
+    resp_button.innerText = "Send"
+    resp_button.classList.add("resp_button")
     response.placeholder = "Comment"
     response.classList.add("post_comment")
     response.classList.add("response")
@@ -309,6 +312,7 @@ function loadPosts(posts) {
     container.appendChild(categories);
     container.appendChild(comment);
     container.appendChild(response)
+    container.appendChild(resp_button)
     document.querySelector("#postList").appendChild(container);
 
     container.addEventListener("click", (ev) => {
