@@ -41,6 +41,22 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
+	http.HandleFunc("/api/logout", func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie(COOKIE_SESSION_NAME)
+		if err == nil && cookie != nil {
+			sessionId := cookie.Value
+			GetDB().Exec("DELETE FROM session WHERE session_id = ?", sessionId)
+
+			http.SetCookie(w, &http.Cookie{
+				Name:     COOKIE_SESSION_NAME,
+				Value:    "",
+				Expires:  time.Unix(0, 0),
+				HttpOnly: true,
+				Path:     "/",
+			})
+		}
+	})
+
 	http.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		firstname := r.FormValue("firstname")
@@ -75,7 +91,7 @@ func main() {
 		password := r.FormValue("password")
 
 		if username != "" && password != "" {
-			row := GetDB().QueryRow("SELECT idUser, password FROM user WHERE name = ?", username)
+			row := GetDB().QueryRow("SELECT idUser, password FROM user WHERE name = ? OR mail = ?", username, username)
 			if row != nil {
 				var sqUserId int
 				var sqHashedPassword string
