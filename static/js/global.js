@@ -39,6 +39,7 @@ const register = async(ev) => {
 
 const logout = async (ev) => {
     websocket.close();
+    user.username = "";
     UserConversations = [];
     UsersOnline = [];
     UserList = [];
