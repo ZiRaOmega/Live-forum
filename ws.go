@@ -296,7 +296,10 @@ func WsSynchronizeUsers(db *sql.DB, ws *websocket.Conn) {
 	OnlineUsers := Online{Type: "sync:users"}
 
 	for _, clientInfo := range clients {
-		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{Username: clientInfo.Username, UserID: clientInfo.UserId})
+		OnlineUsers.OnlineUsers = append(OnlineUsers.OnlineUsers, OnlineUser{
+			Username: clientInfo.Username,
+			UserID:   clientInfo.UserId,
+		})
 	}
 
 	for client := range clients {
