@@ -277,6 +277,10 @@ function loadPosts(posts) {
     let content = document.createElement("p");
     let categories = document.createElement("p");
     let comment = document.createElement("p");
+    let response = document.createElement("input")
+    response.placeholder = "Comment"
+    response.classList.add("post_comment")
+    response.classList.add("response")
     title.innerHTML = posts[i].title;
     username.innerHTML = posts[i].username;
     postDate = new Date(Number(posts[i].date)).toUTCString();
@@ -304,6 +308,7 @@ function loadPosts(posts) {
     container.appendChild(content);
     container.appendChild(categories);
     container.appendChild(comment);
+    container.appendChild(response)
     document.querySelector("#postList").appendChild(container);
 
     container.addEventListener("click", (ev) => {
