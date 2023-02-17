@@ -92,7 +92,10 @@ const synchronizeUserList = () => {
   var message = new Message("server", "request", "sync:userList");
   websocket.send(message.stringify());
 };
-
+const AutoScrollMessages = () => {
+  var conv = document.getElementsByClassName("convHolder")[0];
+  conv.scrollTop = conv.scrollHeight;
+}
 const initWebsocket = () => {
   if (websocket && websocket.readyState == WebSocket.OPEN) {
     console.error("already connected");
@@ -119,6 +122,7 @@ const initWebsocket = () => {
       case "sync:messages":
         console.log(message.Messages);
         UserConversations = message.Messages;
+        AutoScrollMessages();
         break;
       case "sync:users":
         console.log(message.Users);
@@ -173,19 +177,19 @@ function createList(users) {
   userss = [];
   users.forEach((item) => {
     userss.push(item.username);
-    });
-    //document.querySelector(".convs").appendChild(list);
-  }
+  });
+  //document.querySelector(".convs").appendChild(list);
+}
 
-  var refresh = false;
-  setInterval(() => {
-    if (refresh) {
-      refresh = false;
-    } else {
-      refresh = true;
-    }
-  }, 1000);
-  document.addEventListener("mousemove", () => {
+var refresh = false;
+setInterval(() => {
+  if (refresh) {
+    refresh = false;
+  } else {
+    refresh = true;
+  }
+}, 1000);
+document.addEventListener("mousemove", () => {
   if (!refresh) {
     return;
   }
@@ -229,6 +233,7 @@ function createList(users) {
 setTimeout(() => {
   document.querySelector("#user").innerText = user.username;
 }, 500);
+var Counter = 10;
 
 function loadConversation(user) {
   let userMessages = [];
@@ -246,6 +251,19 @@ function loadConversation(user) {
       }
     }
   }
+  var lenmsg = userMessages.length;
+  if (lenmsg > 10) {
+    
+    //Reverse userMessages and get the last 10 messages
+    userMessages = userMessages.reverse().slice(0, Counter);
+    console.log(userMessages)
+    //Reverse userMessages again to get the correct order
+    userMessages = userMessages.reverse();
+    Counter += 10;
+    if (Counter > lenmsg) {
+      Counter = lenmsg;
+    }
+  }
   if (document.querySelector(".conv") != null) {
     document.querySelector(".conv").innerHTML = "";
   }
@@ -261,6 +279,7 @@ function loadConversation(user) {
       document.querySelector(".conv").appendChild(p);
     }
   }
+  AutoScrollMessages();
 }
 
 //Forum page
