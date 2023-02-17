@@ -166,7 +166,7 @@ const GetMessagesSorted = (user) => {
 
 const GetLastMessage = (user) => {
   const messages = GetMessagesSorted(user);
-  return messages[messages.length - 1] || { Date: "99999999999999999999999999" };
+  return messages[messages.length - 1] || { Date: "0" };
 };
 
 function createList(users) {
@@ -195,8 +195,8 @@ function createList(users) {
   userss.sort((a, b) => {
     const aMsgDate = GetLastMessage(a).Date || "0";
     const bMsgDate = GetLastMessage(b).Date || "0";
-    if (parseInt(aMsgDate) < parseInt(bMsgDate)) return -1;
-    else if (parseInt(aMsgDate) > parseInt(bMsgDate)) return 1;
+    if (parseInt(aMsgDate) < parseInt(bMsgDate)) return 1;
+    else if (parseInt(aMsgDate) > parseInt(bMsgDate)) return -1;
     else return 0;
   });
 
