@@ -43,6 +43,7 @@ const logout = async (ev) => {
     UsersOnline = [];
     UserList = [];
     Posts = [];
+    userss = [];
     currentDiscussion = "";
     await fetch("/api/logout");
 };
