@@ -38,7 +38,7 @@ export default {
                     const scrollHeight = element.scrollHeight;
                     setTimeout(() => {
                         loadConversation(currentDiscussion);
-                        element.scrollTop = element.scrollHeight - scrollHeight-(Counter/10/scrollHeight)-Counter*10+50;
+                        element.scrollTop = element.scrollHeight - scrollHeight-(Counter/10/scrollHeight)+20;
                         Scrolled = false;
                     }, 100);
                     //loadConversation(currentDiscussion);
