@@ -56,5 +56,22 @@ const SearchPost = (search) => {
             FilteredPosts.push(Posts[i]);
         }
     }
-    loadPosts(FilteredPosts);
+    if (FilteredPosts.length == 0 && search != "") {
+        var postSearch = document.querySelector('#postSearch');
+        var noPost = document.createElement('p');
+        noPost.innerHTML = "No post found";
+        noPost.classList.add('noPost');
+        var noPostPrevious = document.querySelector('.noPost');
+        if (noPostPrevious) {
+            noPostPrevious.remove();
+        }
+        postSearch.appendChild(noPost);
+        loadPosts([])
+    }else{
+        var noPost = document.querySelector('.noPost');
+        if (noPost) {
+            noPost.remove();
+        }
+        loadPosts(FilteredPosts);
+    }
 };

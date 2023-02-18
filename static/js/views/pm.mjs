@@ -1,6 +1,6 @@
 export default {
-  render: () => {
-    return `<div class="convHolder">
+    render: () => {
+        return `<div class="convHolder">
         <div class="conv">
         </div>
         <div id="currentDiscussion"></div>
@@ -14,24 +14,95 @@ export default {
         <div class="convs">
         <div>
         </div>`;
-  },
-  postRender: () => {
-    document
-      .querySelector("#form-send-message")
-      .addEventListener("submit", (ev) => {
-        ev.preventDefault();
+    },
+    postRender: () => {
+        var refresh = false;
+        setInterval(() => {
+            if (refresh) {
+                refresh = false;
+            } else {
+                refresh = true;
+            }
+        }, 1000);
+        var Scrolled = false;
+        document.addEventListener("mousemove", () => {
+            if (!refresh) {
+                return;
+            }
+            const element = document.querySelector('.convHolder');
 
-        const field = document.querySelector("#sender");
-        let text = field.value;
-        if (text != "") {
-          field.value = "";
+            element.addEventListener('scroll', function () {
+                if (element.scrollTop === 0 && !Scrolled) {
+                    Scrolled = true;
+                    console.log('Scrollbar has reached the top!');
+                    const scrollHeight = element.scrollHeight;
+                    setTimeout(() => {
+                        loadConversation(currentDiscussion);
+                        element.scrollTop = element.scrollHeight - scrollHeight-(Counter/10/scrollHeight)-Counter*10+50;
+                        Scrolled = false;
+                    }, 100);
+                    //loadConversation(currentDiscussion);
 
-          text = text.replaceAll("$", "🐧");
+                }
+            });
+            var crs = document.getElementsByClassName("cr");
+            const list = document.createElement("ul");
 
-          const recipient = currentDiscussion;
-          sendPrivateMessage(text, recipient);
-        }
-      });
-      createList(UserList);
-  },
+            userss.sort((a, b) => {
+                a = GetLastMessage(a) || 0;
+                b = GetLastMessage(b) || 0;
+                if (typeof a !== "number") a = parseInt(a.Date);
+                if (typeof b !== "number") b = parseInt(b.Date);
+                if (a < b) return 1;
+                else if (a > b) return -1;
+                else return 0;
+            });
+
+            userss.forEach((item) => {
+                if (item != user.username) {
+                    const span = document.createElement("span");
+                    const user = document.createElement("p");
+                    user.addEventListener("click", function () {
+                        loadConversation(item);
+                    });
+                    user.textContent = item;
+                    const lastMessage = GetLastMessage(item);
+                    if (lastMessage != null) {
+                        user.textContent += " - " + lastMessage.Content;
+                    }
+                    span.classList.add("dot");
+                    list.classList.add("cr");
+                    for (let i = 0; i < UsersOnline.length; i++) {
+                        if (UsersOnline[i].username == item) {
+                            span.classList.add("online");
+                        }
+                    }
+                    list.appendChild(span);
+                    list.appendChild(user);
+                }
+            });
+            refresh = false;
+            if (document.querySelector(".convs") != null) {
+                document.querySelector(".convs").innerHTML = "";
+                document.querySelector(".convs").appendChild(list);
+            }
+        });
+        document
+            .querySelector("#form-send-message")
+            .addEventListener("submit", (ev) => {
+                ev.preventDefault();
+
+                const field = document.querySelector("#sender");
+                let text = field.value;
+                if (text != "") {
+                    field.value = "";
+
+                    text = text.replaceAll("$", "🐧");
+
+                    const recipient = currentDiscussion;
+                    sendPrivateMessage(text, recipient);
+                }
+            });
+        createList(UserList);
+    },
 };

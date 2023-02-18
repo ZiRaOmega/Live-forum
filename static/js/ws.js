@@ -48,7 +48,6 @@ const CreatePost = (title, content, categories) => {
     JSON.stringify({
       type: "post",
       message: {
-        id: id,
         title: title,
         username: user.username,
         date: Date.now().toString(),
@@ -188,74 +187,7 @@ function createList(users) {
   //document.querySelector(".convs").appendChild(list);
 }
 
-var refresh = false;
-setInterval(() => {
-  if (refresh) {
-    refresh = false;
-  } else {
-    refresh = true;
-  }
-}, 1000);
-document.addEventListener("mousemove", () => {
-  if (!refresh) {
-    return;
-  }
-  const element = document.querySelector('.convHolder');
-  
-  element.addEventListener('scroll', function() {
-    if (element.scrollTop === 0) {
-      console.log('Scrollbar has reached the top!');
-      const scrollHeight = element.scrollHeight;
-      setTimeout(() => {
-        loadConversation(currentDiscussion);
-        element.scrollTop = element.scrollHeight - scrollHeight-200;
-      }, 300); 
-      //loadConversation(currentDiscussion);
-      
-    }
-  });
-  var crs = document.getElementsByClassName("cr");
-  const list = document.createElement("ul");
 
-  userss.sort((a, b) => {
-    a = GetLastMessage(a) || 0;
-    b = GetLastMessage(b) || 0;
-    if (typeof a !== "number") a = parseInt(a.Date);
-    if (typeof b !== "number") b = parseInt(b.Date);
-    if (a < b) return 1;
-    else if (a > b) return -1;
-    else return 0;
-  });
-
-  userss.forEach((item) => {
-    if (item != user.username) {
-      const span = document.createElement("span");
-      const user = document.createElement("p");
-      user.addEventListener("click", function () {
-        loadConversation(item);
-      });
-      user.textContent = item;
-      const lastMessage = GetLastMessage(item);
-      if (lastMessage != null) {
-        user.textContent += " - " + lastMessage.Content;
-      }
-      span.classList.add("dot");
-      list.classList.add("cr");
-      for (let i = 0; i < UsersOnline.length; i++) {
-        if (UsersOnline[i].username == item) {
-          span.classList.add("online");
-        }
-      }
-      list.appendChild(span);
-      list.appendChild(user);
-    }
-  });
-  refresh = false;
-  if (document.querySelector(".convs") != null) {
-    document.querySelector(".convs").innerHTML = "";
-    document.querySelector(".convs").appendChild(list);
-  }
-});
 
 setTimeout(() => {
   document.querySelector("#user").innerText = user.username;
@@ -290,6 +222,7 @@ function loadConversation(user) {
     //Reverse userMessages and get the last 10 messages
     userMessages = userMessages.reverse().slice(0, Counter);
     console.log(userMessages)
+    console.log(lenmsg)
     //Reverse userMessages again to get the correct order
     userMessages = userMessages.reverse();
     Counter += 10;
