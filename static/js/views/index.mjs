@@ -1,12 +1,19 @@
 export default {
     render: () => {
-        return `<div id="postcreator">
+        return `
+        <button id="filter_button" >Filter</button>
+        <div id="postSearch" hidden>
+        <input id="search" type="text" placeholder="Search by Categories">
+        <button id="search_button">Search by Categories</button>
+        </div>
+        
+        <div id="postList">
+        </div>
+        <div id="postcreator">
         <input id="post_title" class="post_element" type="text" placeholder="Title">
         <input id="post_categories" class="post_element" type="text" placeholder="Categories">
-        <input id="post_content" class="post_element" type="text" placeholder="Content">
+        <textarea id="post_content" class="post_element" type="text" placeholder="Content"></textarea>
         <button id="post_button">Créer</button>
-        </div>
-        <div id="postList">
         </div>`;
     },
     postRender: () => { 
@@ -28,6 +35,14 @@ export default {
                 document.querySelector('#postcreator').appendChild(success);
             }
         });
+        document.querySelector('#search_button').addEventListener('click', function() {
+            let search = document.querySelector('#search').value;
+            if (search != "") {
+                SearchPost(search);
+            }else{
+                loadPosts(Posts);
+            }
+        });
 
         const respButtons = document.querySelectorAll('.resp_button');
         console.log(respButtons);
@@ -43,6 +58,17 @@ export default {
     
             AddComment(commentResponseValue, postIdValue);
           });
+        });
+        var filter_button = document.querySelector('#filter_button');
+        filter_button.addEventListener('click', function() {
+            var postSearch = document.querySelector('#postSearch');
+            if (postSearch.hidden) {
+                postSearch.hidden = false;
+                postSearch.style.display = "flex";
+            }else{
+                postSearch.hidden = true;
+                postSearch.style.display = "none";
+            }
         });
     },
 }

@@ -32,5 +32,6 @@ export default {
           sendPrivateMessage(text, recipient);
         }
       });
+      createList(UserList);
   },
 };

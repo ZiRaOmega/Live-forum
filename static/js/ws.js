@@ -126,10 +126,10 @@ const initWebsocket = () => {
         console.log(message.Messages);
         UserConversations = message.Messages;
         console.log('conv')
+        loadConversation(currentDiscussion);
         setTimeout(() => {
           AutoScrollMessages();
         }, 100);
-        loadConversation(currentDiscussion);
         //AutoScrollMessages();
         break;
       case "sync:users":
@@ -201,13 +201,17 @@ document.addEventListener("mousemove", () => {
     return;
   }
   const element = document.querySelector('.convHolder');
-
+  
   element.addEventListener('scroll', function() {
     if (element.scrollTop === 0) {
       console.log('Scrollbar has reached the top!');
-      const scrollHeight = element.scrollHeight; 
-      loadConversation(currentDiscussion);
-      element.scrollTop = element.scrollHeight - scrollHeight;
+      const scrollHeight = element.scrollHeight;
+      setTimeout(() => {
+        loadConversation(currentDiscussion);
+        element.scrollTop = element.scrollHeight - scrollHeight-200;
+      }, 300); 
+      //loadConversation(currentDiscussion);
+      
     }
   });
   var crs = document.getElementsByClassName("cr");

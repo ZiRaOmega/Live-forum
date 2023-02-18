@@ -49,3 +49,12 @@ const logout = async (ev) => {
     await fetch("/api/logout");
 };
 
+const SearchPost = (search) => {
+    let FilteredPosts = [];
+    for (let i = 0; i < Posts.length; i++) {
+        if (Posts[i].categories.includes(search)) {
+            FilteredPosts.push(Posts[i]);
+        }
+    }
+    loadPosts(FilteredPosts);
+};
