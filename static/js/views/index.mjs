@@ -1,9 +1,9 @@
 export default {
     render: () => {
         return `<div id="postcreator">
-        <input id="post_title" type="text" placeholder="Post Title">
-        <input id="post_categories" type="text" placeholder="Post Categories">
-        <input id="post_content" type="text" placeholder="Post Content">
+        <input id="post_title" class="post_element" type="text" placeholder="Title">
+        <input id="post_categories" class="post_element" type="text" placeholder="Categories">
+        <input id="post_content" class="post_element" type="text" placeholder="Content">
         <button id="post_button">Créer</button>
         </div>
         <div id="postList">
