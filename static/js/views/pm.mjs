@@ -32,7 +32,7 @@ export default {
             const element = document.querySelector('.convHolder');
 
             element.addEventListener('scroll', function () {
-                if (element.scrollTop === 0 && !Scrolled) {
+                if (element.scrollTop === 0 && !Scrolled && Counter != UserConversations.length) {
                     Scrolled = true;
                     console.log('Scrollbar has reached the top!');
                     const scrollHeight = element.scrollHeight;
@@ -40,9 +40,13 @@ export default {
                         loadConversation(currentDiscussion);
                         element.scrollTop = element.scrollHeight - scrollHeight-(Counter/10/scrollHeight)+20;
                         Scrolled = false;
-                    }, 100);
+                    }, 50);
                     //loadConversation(currentDiscussion);
 
+                }else if (Counter == UserConversations.length){
+                    setTimeout(() => {
+                        loadConversation(currentDiscussion);
+                    }, 50);
                 }
             });
             var crs = document.getElementsByClassName("cr");
