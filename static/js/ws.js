@@ -125,7 +125,11 @@ const initWebsocket = () => {
       case "sync:messages":
         console.log(message.Messages);
         UserConversations = message.Messages;
-        AutoScrollMessages();
+        console.log('conv')
+        setTimeout(() => {
+          AutoScrollMessages();
+        }, 100);
+        //AutoScrollMessages();
         break;
       case "sync:users":
         console.log(message.Users);
@@ -142,7 +146,7 @@ const initWebsocket = () => {
         loadPosts(Posts);
         break;
     }
-    loadConversation(currentDiscussion);
+   
   };
 };
 
@@ -244,9 +248,15 @@ setTimeout(() => {
   document.querySelector("#user").innerText = user.username;
 }, 500);
 var Counter = 10;
+var FirstLoad = true;
 
+console.log(FirstLoad)
 function loadConversation(user) {
   let userMessages = [];
+  if (user!=currentDiscussion) {
+    Counter = 10;
+    FirstLoad = true;
+  }
   currentDiscussion = user;
   if (document.querySelector("#currentDiscussion") != null) {
     document.querySelector("#currentDiscussion").innerText = currentDiscussion;
@@ -289,7 +299,11 @@ function loadConversation(user) {
       document.querySelector(".conv").appendChild(p);
     }
   }
-  AutoScrollMessages();
+  if (FirstLoad) {
+    AutoScrollMessages();
+    FirstLoad = false;
+  }
+  //AutoScrollMessages();
 }
 
 //Forum page
