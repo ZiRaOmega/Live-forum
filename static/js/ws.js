@@ -176,7 +176,7 @@ const GetMessagesSorted = (user) => {
 
 const GetLastMessage = (user) => {
   const messages = GetMessagesSorted(user);
-  return messages[messages.length - 1] || { Date: "0" };
+  return messages[messages.length - 1] || null;
 };
 
 function createList(users) {
@@ -213,10 +213,12 @@ document.addEventListener("mousemove", () => {
   const list = document.createElement("ul");
 
   userss.sort((a, b) => {
-    const aMsgDate = GetLastMessage(a).Date || "0";
-    const bMsgDate = GetLastMessage(b).Date || "0";
-    if (parseInt(aMsgDate) < parseInt(bMsgDate)) return 1;
-    else if (parseInt(aMsgDate) > parseInt(bMsgDate)) return -1;
+    a = GetLastMessage(a) || 0;
+    b = GetLastMessage(b) || 0;
+    if (typeof a !== "number") a = parseInt(a.Date);
+    if (typeof b !== "number") b = parseInt(b.Date);
+    if (a < b) return 1;
+    else if (a > b) return -1;
     else return 0;
   });
 
@@ -228,6 +230,10 @@ document.addEventListener("mousemove", () => {
         loadConversation(item);
       });
       user.textContent = item;
+      const lastMessage = GetLastMessage(item);
+      if (lastMessage != null) {
+        user.textContent += " - " + lastMessage.Content;
+      }
       span.classList.add("dot");
       list.classList.add("cr");
       for (let i = 0; i < UsersOnline.length; i++) {
