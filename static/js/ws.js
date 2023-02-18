@@ -327,6 +327,16 @@ function loadPosts(posts) {
     let resp_button = document.createElement("button");
     resp_button.innerText = "Send"
     resp_button.classList.add("resp_button")
+    resp_button.addEventListener('click', function() {
+      const postDiv = resp_button.closest('.post_container');
+      const postCommentResponse = postDiv.querySelector('.response');
+      const postId = postDiv.querySelector('.post_id');
+
+      const commentResponseValue = postCommentResponse.value;
+      const postIdValue = postId.value;
+
+      AddComment(commentResponseValue, postIdValue);
+    });
     response.placeholder = "Comment"
     response.classList.add("post_comment")
     response.classList.add("response")
