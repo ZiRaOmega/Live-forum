@@ -23,7 +23,16 @@ export default {
             let content = document.querySelector('#post_content').value;
             let categories = document.querySelector('#post_categories').value;
             if (title != "" && content != "" && categories != "") {
+                //Wait 500ms to avoid spamming
+                setTimeout(function() {
+                    document.querySelector('#post_button').disabled = false;
+                }, 500);
                 CreatePost(title, content, categories);
+                //Auto scroll to the bottom of the page (document.body.scrollHeight)
+                setTimeout(function() {
+
+                window.scrollTo(0, document.body.scrollHeight);
+                }, 200);
             }
             document.querySelector('#post_title').value = "";
             document.querySelector('#post_content').value = "";
@@ -40,8 +49,13 @@ export default {
             if (search != "") {
                 SearchPost(search);
             }else{
+                var noPost = document.querySelector('.noPost');
+                if (noPost) {
+                    noPost.remove();
+                }
                 loadPosts(Posts);
             }
+            document.querySelector('#search').value = "";
         });
 
         const respButtons = document.querySelectorAll('.resp_button');

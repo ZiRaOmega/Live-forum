@@ -1,7 +1,7 @@
 export default {
     render: () => {
         return `<div class="profile">
-        <img class="pp">
+        <img class="pp" src="./static/img/logo.png">
         <div><p id="profile-username"></p></div>
         </div>`;
     },
