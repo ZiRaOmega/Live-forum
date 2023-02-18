@@ -204,7 +204,9 @@ document.addEventListener("mousemove", () => {
   element.addEventListener('scroll', function() {
     if (element.scrollTop === 0) {
       console.log('Scrollbar has reached the top!');
+      const scrollHeight = element.scrollHeight; 
       loadConversation(currentDiscussion);
+      element.scrollTop = element.scrollHeight - scrollHeight;
     }
   });
   var crs = document.getElementsByClassName("cr");
