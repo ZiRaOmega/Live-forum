@@ -196,8 +196,9 @@ var Counter = 10;
 var FirstLoad = true;
 
 console.log(FirstLoad)
+let userMessages = [];
 function loadConversation(user) {
-  let userMessages = [];
+  userMessages = [];
   if (user!=currentDiscussion) {
     Counter = 10;
     FirstLoad = true;
