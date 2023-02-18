@@ -28,7 +28,9 @@ export default {
                 document.querySelector('#postcreator').appendChild(success);
             }
         });
+
         const respButtons = document.querySelectorAll('.resp_button');
+        console.log(respButtons);
 
         respButtons.forEach(function(respButton) {
           respButton.addEventListener('click', function() {
