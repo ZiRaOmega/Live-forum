@@ -129,6 +129,7 @@ const initWebsocket = () => {
         setTimeout(() => {
           AutoScrollMessages();
         }, 100);
+        loadConversation(currentDiscussion);
         //AutoScrollMessages();
         break;
       case "sync:users":
