@@ -43,6 +43,17 @@ const sendPrivateMessage = (message, recipient) => {
     }),
   );
 };
+const SendTypingInProgress = (recipient) => {
+  websocket.send(
+    JSON.stringify({
+      type: "typing",
+      message: {
+        from: user.username,
+        to: recipient,
+      },
+    }),
+  );
+};
 const CreatePost = (title, content, categories) => {
   websocket.send(
     JSON.stringify({
@@ -145,6 +156,9 @@ const initWebsocket = () => {
         Posts = message.posts;
         loadPosts(Posts);
         break;
+      case "typing":
+        TypingInProgress(message.from)
+        console.log(message);
     }
    
   };
@@ -329,3 +343,35 @@ function loadPosts(posts) {
     });
   }
 }
+const TypingInProgress=(user)=>{
+  var recents = document.getElementsByClassName("cr")[0];
+  for (let children of recents.children) {
+    //Get only p elements
+    if (children.tagName == "P") {
+      let splitted = children.innerText.replace(" ", "").split("-");
+      console.log(splitted,user)
+      if (splitted[0] == user) {
+        if (children.innerText.includes("Typing...")) {
+          children.innerText = children.innerText.replace("- Typing...", "");
+        }
+        children.innerText += " - Typing...";
+      }
+    }
+      
+  }
+}
+setInterval(() => {
+  var recents = document.getElementsByClassName("cr")[0];
+  for (let children of recents.children) {
+    //Get only p elements
+    if (children.tagName == "P") {
+      
+      
+        if (children.innerText.includes("Typing...")) {
+          children.innerText = children.innerText.replace("- Typing...", "");
+        }
+      
+      }
+    }
+      
+  }, 5000);

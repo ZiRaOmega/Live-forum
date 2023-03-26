@@ -91,6 +91,12 @@ export default {
                 document.querySelector(".convs").appendChild(list);
             }
         });
+        
+        let inputsender = document.getElementById("sender");
+        inputsender.addEventListener("keyup", function (event) {
+            SendTypingInProgress(currentDiscussion);
+        });
+
         document
             .querySelector("#form-send-message")
             .addEventListener("submit", (ev) => {
