@@ -178,10 +178,30 @@ func MessageHandler(ws *websocket.Conn) {
 			ws.WriteJSON(map[string]string{
 				"request": "ping",
 			})
+		case "typing":
+			WsTyping(db, ws, msg)
 		}
 	}
 }
-
+func WsTyping(db *sql.DB, ws *websocket.Conn, msg Message) {
+	var message map[string]interface{} = msg.Message.(map[string]interface{})
+	var to string = message["to"].(string)
+	var from string = message["from"].(string)
+	type Typing struct {
+		Type string `json:"type"`
+		From string `json:"from"`
+		To   string `json:"to"`
+	}
+	var tiping Typing
+	tiping.Type = "typing"
+	tiping.From = from
+	tiping.To = to
+	for client, info := range clients {
+		if info.Username == to {
+			client.WriteJSON(tiping)
+		}
+	}
+}
 func WsComment(db *sql.DB, ws *websocket.Conn, msg Message) {
 	var mp map[string]interface{} = msg.Message.(map[string]interface{})
 	fmt.Println(mp)
