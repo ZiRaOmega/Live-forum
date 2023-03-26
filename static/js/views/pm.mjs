@@ -32,7 +32,7 @@ export default {
             const element = document.querySelector('.convHolder');
 
             element.addEventListener('scroll', function () {
-                if (element.scrollTop === 0 && !Scrolled && Counter != UserConversations.length) {
+                if (element.scrollTop === 0 && !Scrolled && Counter != userMessages.length) {
                     Scrolled = true;
                     console.log('Scrollbar has reached the top!');
                     const scrollHeight = element.scrollHeight;
@@ -43,7 +43,7 @@ export default {
                     }, 50);
                     //loadConversation(currentDiscussion);
 
-                }else if (Counter == UserConversations.length){
+                }else if (Counter == userMessages.length){
                     setTimeout(() => {
                         loadConversation(currentDiscussion);
                     }, 50);
