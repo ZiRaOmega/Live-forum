@@ -463,3 +463,17 @@ background: linear-gradient(17deg, rgba(34,193,195,1) 0%, rgba(45,253,142,1) 100
     padding: 5px;
     margin-left: 5px;
 }
+.typing-demo {
+    width: 30ch;
+    animation: typing 1.5s infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid;
+    font-family: monospace;
+  }
+  
+  @keyframes typing {
+    from {
+      width: 0
+    }
+  }
