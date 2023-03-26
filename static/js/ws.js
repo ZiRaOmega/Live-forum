@@ -352,26 +352,12 @@ const TypingInProgress=(user)=>{
       console.log(splitted,user)
       if (splitted[0] == user) {
         if (children.innerText.includes("Typing...")) {
-          children.innerText = children.innerText.replace("- Typing...", "");
+          return
         }
         children.innerText += " - Typing...";
+        children.classList.add("typing-demo");
       }
     }
       
   }
 }
-setInterval(() => {
-  var recents = document.getElementsByClassName("cr")[0];
-  for (let children of recents.children) {
-    //Get only p elements
-    if (children.tagName == "P") {
-      
-      
-        if (children.innerText.includes("Typing...")) {
-          children.innerText = children.innerText.replace("- Typing...", "");
-        }
-      
-      }
-    }
-      
-  }, 5000);

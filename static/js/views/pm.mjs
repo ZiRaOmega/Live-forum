@@ -38,12 +38,12 @@ export default {
                     const scrollHeight = element.scrollHeight;
                     setTimeout(() => {
                         loadConversation(currentDiscussion);
-                        element.scrollTop = element.scrollHeight - scrollHeight-(Counter/10/scrollHeight)+20;
+                        element.scrollTop = element.scrollHeight - scrollHeight - (Counter / 10 / scrollHeight) + 20;
                         Scrolled = false;
                     }, 50);
                     //loadConversation(currentDiscussion);
 
-                }else if (Counter == userMessages.length){
+                } else if (Counter == userMessages.length) {
                     setTimeout(() => {
                         loadConversation(currentDiscussion);
                     }, 50);
@@ -91,7 +91,7 @@ export default {
                 document.querySelector(".convs").appendChild(list);
             }
         });
-        
+
         let inputsender = document.getElementById("sender");
         inputsender.addEventListener("keyup", function (event) {
             SendTypingInProgress(currentDiscussion);
@@ -114,5 +114,21 @@ export default {
                 }
             });
         createList(UserList);
+        setInterval(() => {
+            var recents = document.getElementsByClassName("cr")[0];
+            for (let children of recents.children) {
+                //Get only p elements
+                if (children.tagName == "P") {
+
+                    if (children.innerText.includes("Typing...")) {
+                        children.innerText = children.innerText.replace("- Typing...", "");
+                        children.classList.remove("typing-demo");
+                    }
+
+                }
+
+            }
+
+        }, 10000);
     },
 };
